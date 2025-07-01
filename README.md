@@ -2,30 +2,61 @@
 
 ##Introduction
 
-A web application for bike rentals, built with Django to showcase full-stack development skills. Features include bike browsing, online reservations, real-time chat, and Google/Facebook login. This project is versioned on GitHub for portfolio purposes.
+A Django-based bike rental application allowing online bike reservations, consultant chat, and login via Google/Facebook.
 
-##Technologies Backend: Python 3.13, Django 5.2.3 Frontend: Bootstrap 5 Database: PostgreSQL Package Management: uv Dependencies: psycopg2-binary, pillow, python-decouple, django-channels, social-auth-app-django
+##Features
+
+Online bike reservation system
+Google and Facebook login (using django-allauth)
+Real-time consultant chat
+Secure configuration with python-dotenv
+
+##Technologies
+
+Python 3.10+
+Django
+Bootstrap (frontend)
+python-dotenv (environment variable management)
+Full dependency list in requirements.txt
 
 ##Setup Instructions
 
-Clone the repository:
+###Clone the repository:
+git clone https://github.com/your-username/bike-rental-app.git
+cd bike-rental-app
 
-git clone https://github.com/YOUR_USERNAME/bike-rental-django.git cd bike-rental-django
+###Install dependencies:Ensure you have Python 3.10+ installed, then run:
+pip install -r requirements.txt
 
-Install uv: pip install uv
+###Configure environment variables:
 
-Install Python 3.13: uv python install 3.13 --preview
+Create a .env file in the project root based on example.env:
 
-Create and activate virtual environment: uv venv --python 3.13 source .venv/bin/activate # Linux/macOS ..venv\Scripts\activate # Windows
+DB_NAME=wildwheeldb
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+DB_HOST=localhost
+DB_PORT=5432
+SECRET_KEY=your_secret_key
+DEBUG=True
+GOOGLE_CLIENT_ID=your_google_client_id
+FACEBOOK_APP_ID=your_facebook_app_id
 
-Install dependencies: uv pip install -r requirements.txt
+Update .env with your credentials (e.g., database URL, Google/Facebook API keys).
 
-Configure PostgreSQL: Create a database named bike_rental_db.
 
-Add .env file with: DATABASE_URL=postgresql://postgres:your_password@localhost:5432/bike_rental_db SECRET_KEY=your_django_secret_key
+Apply database migrations:
+python manage.py migrate
 
-Apply migrations: python manage.py migrate
 
-Run the server: python manage.py runserver
+Run the development server:
+python manage.py runserver
 
-Open http://localhost:8000 to view the app.
+Access the app at http://localhost:8000.
+
+
+Notes
+
+Ensure .env is not committed to Git (it’s ignored in .gitignore).
+For production, set DEBUG=False and configure environment variables on your hosting platform (e.g., Heroku).
+

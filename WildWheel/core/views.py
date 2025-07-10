@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
+from django.contrib.auth.models import auth
+from .forms import RegistrationForm, LoginForm
 
 
 
@@ -31,18 +33,20 @@ def contact(request):
 def login_user(request):
     """Render the login page."""
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        print(username, password)  # Debug
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            messages.info(request, f"Log In successfully")
-            login(request, user)
-            return redirect("index")  # Przekierowanie po zalogowaniu
-        else:
-            messages.error(request, "Invalid username or password.")
-            return redirect("login")
-    return render(request, "login.html", {})
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                    login(request, user)
+                    messages.info(request, f"Log In successfully")
+                    return redirect("index")
+            else:
+                form.add_error(None, "Invalid username or password")
+    else:
+        form = LoginForm()
+    return render(request, "login.html", {"form": form})
 
 def logout_user(request):
     """Log out the user and redirect to the index page."""
@@ -52,7 +56,20 @@ def logout_user(request):
 
 def register(request):
     """Render the register page."""
-    return render(request, "register.html", {})
-
+    form = RegistrationForm(request.POST)
+    if request.method == "POST":
+        errors = form.errors.as_data()
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account created successfully")
+            return redirect("index")
+        else:
+            for error in errors.values():
+                for msg in error:
+                    messages.error(request, f"{msg.message}")
+                    return redirect("register")
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {"form": form})
 
 

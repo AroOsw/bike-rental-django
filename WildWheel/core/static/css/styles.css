@@ -29,6 +29,10 @@ body {
   cursor: pointer;
 }
 
+.asteriskField {
+    display: none;
+}
+
 .btn-success {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
@@ -45,4 +49,13 @@ body {
     color: rgb(220, 53, 69);
     text-align: center;
     margin-bottom: 1rem;
+}
+
+.terms-text {
+  color: white;
+}
+
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
 }

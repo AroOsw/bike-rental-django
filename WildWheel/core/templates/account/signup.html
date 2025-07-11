@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+  <section class="vh-100">
+  <div class="mask d-flex align-items-center h-100 gradient-custom-3" data-bs-theme="dark">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+          <div class="card" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+              <div class="mb-md-5 mt-md-4 pb-1">
+                <h2 class="fw-bold text-uppercase text-center mb-5"><span class="wild-text">Sign</span>Up</h2>
+
+                  {% crispy form %}
+
+                <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{% url "account_login" %}"
+                    class="fw-bold text-body"><u>Login here</u></a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

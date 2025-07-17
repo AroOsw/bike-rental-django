@@ -1,8 +1,14 @@
 :root {
   --primary-color: #6A9E39;
+
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   background: #31690d;
   background: -webkit-linear-gradient(to right, rgb(49, 105, 13), rgba(37, 117, 252, 1));
   background: linear-gradient(to right, rgb(49, 105, 13), rgba(37, 117, 252, 1))
@@ -14,6 +20,11 @@ body {
 
 .wild-text {
   color: var(--primary-color);
+}
+
+.my-6 {
+    margin-top: 5rem !important;
+    margin-bottom: 5rem !important;
 }
 
 .messages {

@@ -1,2 +1,29 @@
 {% extends "allauth/layouts/base.html" %}
-{% block content %}{% endblock %}
+{% load i18n allauth %}
+{% block body %}
+
+
+<div class="my-6 d-flex justify-content-center align-items-center"  data-bs-theme="dark">
+  <div class="col-10 col-md-8 col-lg-6 col-xl-5">
+      <div class="card" style="border-radius: 1rem;">
+        <div class="card-body p-5 text-center">
+          <div class="mb-md-5 mt-md-4 pb-1">
+            {% if messages %}
+                {% for message in messages %}
+                    {% element alert level=message.tags %}
+                        {% slot message %}
+                            {{ message }}
+                        {% endslot %}
+                    {% endelement %}
+                {% endfor %}
+            {% endif %}
+            <div id="content" class="p-5">
+              {% block content %}{% endblock %}
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}

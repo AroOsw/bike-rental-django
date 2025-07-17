@@ -1,14 +1,35 @@
 from django import forms
-from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-
-from allauth.account.forms import LoginForm as AllauthLoginForm, SignupForm
-
+from allauth.account.forms import LoginForm as AllauthLoginForm, SignupForm, ResetPasswordForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+
+class CrispyResetPasswordForm(ResetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_action = reverse("account_reset_password")
+        self.helper.form_show_errors = True
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = False
+        self.fields["email"].label = ""
+        self.fields["email"].widget.attrs.update({
+            "required": True,
+            "id": "email",
+            "type": "email",
+            "class": "input-form",
+            "placeholder": "Email",
+            "autocomplete": "email",
+        })
+        self.helper.layout = Layout(
+            'email',
+            Div(
+                Submit("submit", "Reset password", css_class="btn btn-success"),
+                css_class="d-flex justify-content-center my-4")
+        )
 
 class LoginForm(AllauthLoginForm):
     def __init__(self, *args, **kwargs):
@@ -24,7 +45,7 @@ class LoginForm(AllauthLoginForm):
             "required": True,
             "id": "username",
             "class": "input-form",
-            "placeholder": "Username",
+            "placeholder": "Username/Email",
             "autocomplete": "username",
         })
         self.fields["password"].label = ""
@@ -44,27 +65,6 @@ class LoginForm(AllauthLoginForm):
                 css_class="d-flex justify-content-center my-4")
         )
 
-    # def clean(self):
-    #     username = self.cleaned_data.get('username')
-    #     password = self.cleaned_data.get('password')
-    #
-    #     if username and password:
-    #         User = get_user_model()
-    #         try:
-    #             user = User.objects.get(username=username)
-    #             if not user.check_password(password):
-    #                 self.add_error('password', "Incorrect password")
-    #                 return self.cleaned_data
-    #         except User.DoesNotExist:
-    #             self.add_error('username', "Username does not exist")
-    #             return self.cleaned_data
-    #         else:
-    #             self.user_cache = authenticate(self.request, username=username, password=password)
-    #             if self.user_cache is None:
-    #                 raise forms.ValidationError("Cannot log in with provided credentials")
-    #             self.confirm_login_allowed(self.user_cache)
-    #
-    #     return self.cleaned_data
 
 class RegistrationForm(SignupForm):
     terms_of_service = forms.BooleanField(
@@ -157,23 +157,3 @@ class RegistrationForm(SignupForm):
                 css_class="d-flex justify-content-center my-4")
         )
 
-    # def clean_username(self):
-    #     username = self.cleaned_data.get('username').lower()
-    #     if User.objects.filter(username=username).exists():
-    #         raise forms.ValidationError("Username already exists.")
-    #     return username
-    #
-    # def clean_email(self):
-    #     email = self.cleaned_data.get('email').lower()
-    #     if User.objects.filter(email=email).exists():
-    #         raise forms.ValidationError("Email already exists.")
-    #     return email
-    #
-    # def save(self, commit=True):
-    #     user = super().save(commit=False)
-    #     user.username = self.cleaned_data['username'].lower()
-    #     if commit:
-    #         user.save()
-    #     return user
-    #
-    #

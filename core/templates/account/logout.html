@@ -1,0 +1,25 @@
+{% extends "account/base_manage.html" %}
+{% load allauth i18n %}
+
+{% block content %}
+<div class="container my-5" data-bs-theme="dark">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg rounded-4 border-0">
+                <div class="card-body text-center p-4">
+                    <h2 class="mb-3">{% trans "Sign Out" %}</h2>
+                    <p class="mb-4">{% trans 'Are you sure you want to sign out?' %}</p>
+
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        {{ redirect_field }}
+                        <button type="submit" class="btn btn-success w-100">
+                            {% trans 'Sign Out' %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

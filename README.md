@@ -16,6 +16,7 @@ A Django-based bike rental application allowing online bike reservations, consul
 - Python 3.10+
 - Django
 - Bootstrap (frontend)
+- uv
 - python-dotenv (environment variable management)
 - Full dependency list in requirements.txt
 
@@ -32,17 +33,17 @@ pip install -r requirements.txt
 
 Create a .env file in the project root based on example.env:
 
-DB_NAME=wildwheeldb
-DB_USER=your_database_user
-DB_PASSWORD=your_database_password
-DB_HOST=localhost
-DB_PORT=5432
-SECRET_KEY=your_secret_key
-DEBUG=True
-GOOGLE_CLIENT_ID=your_google_client_id
-FACEBOOK_APP_ID=your_facebook_app_id
+- DB_NAME=wildwheeldb
+- DB_USER=your_database_user
+- DB_PASSWORD=your_database_password
+- DB_HOST=localhost
+- DB_PORT=5432
+- SECRET_KEY=your_secret_key
+- DEBUG=True
+- GOOGLE_CLIENT_ID=your_google_client_id
+- FACEBOOK_APP_ID=your_facebook_app_id
 
-Update .env with your credentials (e.g., database URL, Google/Facebook API keys).
+- Update .env with your credentials (e.g., database URL, Google/Facebook API keys).
 
 
 Apply database migrations:
@@ -50,9 +51,9 @@ python manage.py migrate
 
 
 ### Run the development server:
-python manage.py runserver
 
-Access the app at http://localhost:8000.
+- python manage.py runserver
+- Access the app at http://localhost:8000.
 
 
 #### Notes

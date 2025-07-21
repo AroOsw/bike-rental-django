@@ -1,0 +1,57 @@
+{% block content %}
+  <nav class="navbar navbar-expand-lg bg-body-tertiary"  data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand me-5 fw-bold"><span class="wild-text">Wild</span>Wheel</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url "index" %}">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="{% url "bikes" %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Bikes
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Road</a></li>
+              <li><a class="dropdown-item" href="#">MTB</a></li>
+              <li><a class="dropdown-item" href="#">Electric</a></li>
+              <li><a class="dropdown-item" href="#">Trekking</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url "routes" %}">Routes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url "reservations" %}">Reservations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url "contact" %}">Contact</a>
+          </li>
+          <li><hr class="hamburger-divider"></li>
+        </ul>
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav me-1 mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+            </li>
+          </ul>
+        {% else %}
+          <ul class="navbar-nav me-1 mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a href="{% url "account_signup" %}" class="nav-link">Sign Up</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url "account_login" %}" class="nav-link">Log In</a>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+{% endblock %}

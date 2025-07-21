@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -34,6 +35,22 @@ def terms(request):
     """Render the terms of service page."""
     return render(request, "terms.html", {})
 
+@login_required
+def profile(request):
+    """Render the user profile page."""
+    if request.user.is_authenticated:
+        user = request.user
+        return render(request, "profile.html", {"user": user})
+    else:
+        messages.error(request, "You need to be logged in to view your profile.")
+        return redirect("index")
+
+def logout_view(request):
+    """Log out the user and redirect to the index page."""
+    logout(request)
+    messages.info(request, "Logged out successfully.")
+    return redirect("index")
+
 # def login_user(request):
 #     """Render the login page."""
 #     if request.method == "POST":
@@ -50,11 +67,7 @@ def terms(request):
 #         form = LoginForm()
 #     return render(request, "login.html", {"form": form})
 #
-def logout_view(request):
-    """Log out the user and redirect to the index page."""
-    logout(request)
-    messages.info(request, "Logged out successfully.")
-    return redirect("index")
+
 #
 # def register(request):
 #     """Render the register page."""

@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.models import auth
 from .forms import RegistrationForm, LoginForm
-
+from .models import PageImages
 
 
 # Create your views here.
@@ -13,6 +13,7 @@ from .forms import RegistrationForm, LoginForm
 
 def index(request):
     """Render the index page."""
+
     return render(request, "index.html", {})
 
 def bikes(request):

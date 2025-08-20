@@ -1,18 +1,22 @@
 :root {
   --primary-color: #6A9E39;
-
 }
+
+
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 body {
-  margin: 0;
+
   background: #31690d;
   background: -webkit-linear-gradient(to right, rgb(49, 105, 13), rgba(37, 117, 252, 1));
   background: linear-gradient(to right, rgb(49, 105, 13), rgba(37, 117, 252, 1))
 }
+
 
 .navbar-brand {
   font-size: 2rem;
@@ -69,4 +73,60 @@ body {
 .form-check-input:checked {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
+}
+
+.bg-image {
+  background-size: cover;
+  background-position: center;
+  height: 50vh;
+  color: #FFFFFF;
+  text-shadow: 1px 5px 2px rgba(0, 0, 0, 1);
+  display: flex;
+  text-align: center;
+  align-items: center;
+  padding-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .bg-image {
+    max-height: 40vh;
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .bg-image {
+    padding: 0;
+    max-height: 30vh;
+  }
+}
+
+.welcome-p {
+  font-weight: bold;
+  font-size: clamp(0.9rem, 2vw, 1.5rem);
+}
+
+.main-p {
+  font-size: clamp(0.7rem, 1.5vw, 1.2rem);
+}
+
+.text-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.display-2 {
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.object-cover {
+    object-fit: cover;
+    width: 150px;
+    height: 150px;
+}
+
+.attribute {
+  font-size: clamp(0.5rem, 1vw, 1.2rem);
 }

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 
-from django.conf.global_settings import STATICFILES_DIRS, LOGIN_REDIRECT_URL, EMAIL_BACKEND
+from django.conf.global_settings import STATICFILES_DIRS, LOGIN_REDIRECT_URL, EMAIL_BACKEND, MEDIA_URL
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.36', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
+    'imagekit',
 ]
 
 
@@ -161,6 +162,9 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SECURE_SSL_REDIRECT = True
@@ -219,3 +223,4 @@ ACCOUNT_RATE_LIMITS = {
 }
 
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
+

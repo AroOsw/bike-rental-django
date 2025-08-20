@@ -5,9 +5,21 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "django>=5.2.3",
-    "dotenv>=0.9.9",
+    "asgiref==3.8.1",
+    "crispy-bootstrap5>=2025.6",
+    "cryptography>=45.0.5",
+    "django==5.2.3",
+    "django-allauth>=65.10.0",
+    "django-crispy-forms>=2.4",
+    "django-imagekit>=5.0.0",
+    "dotenv==0.9.9",
     "git-filter-repo>=2.47.0",
-    "pillow>=11.2.1",
-    "psycopg2>=2.9.10",
+    "pillow==11.3.0",
+    "psycopg2==2.9.10",
+    "pyjwt>=2.10.1",
+    "pytest-django>=4.11.1",
+    "python-dotenv==1.1.1",
+    "requests>=2.32.4",
+    "sqlparse==0.5.3",
+    "tzdata==2025.2",
 ]

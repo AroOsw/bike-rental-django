@@ -122,48 +122,48 @@ class ChatMessage(models.Model):
         return f"Message from {self.user.username} at {self.timestamp}"
 
 
-def page_image_path(instance, filename):
-    """Dynamic path for storing images based on page_section and slug."""
-    return f"{instance.page_section}/{instance.slug}/{filename}"
-
-
-class PageImages(models.Model):
-    """Model representing images for pages."""
-    title = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-    page_section = models.CharField(max_length=100, blank=True, help_text="e.g., homepage, about, bikes")
-    original_image = models.ImageField(upload_to=page_image_path, validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])
-    ])
-
-    # Predefined image specs for common use cases
-    hero_webp = ImageSpecField(
-        source='original_image',
-        processors=[ResizeToFit(1920, 1080)],
-        format='WEBP',
-        options={'quality': 80},
-    )
-    thumbnail_webp = ImageSpecField(
-        source='original_image',
-        processors=[ResizeToFit(300, 300)],
-        format='WEBP',
-        options={'quality': 70},
-    )
-
-    def __str__(self):
-        return f"{self.title} ({self.page_section})"
-
-    def save(self, *args, **kwargs):
-        """Automatically generate slug from title if not provided."""
-        if not self.slug:
-            self.slug = slugify(self.title, allow_unicode=False).replace('-', '-')
-            original_slug = self.slug
-            count = 1
-            while PageImages.objects.filter(slug=self.slug).exists():
-                self.slug = f"{original_slug}_{count}"
-                count += 1
-        super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = 'Page Image'
-        verbose_name_plural = 'Page Images'
+# def page_image_path(instance, filename):
+#     """Dynamic path for storing images based on page_section and slug."""
+#     return f"{instance.page_section}/{instance.slug}/{filename}"
+#
+#
+# class PageImages(models.Model):
+#     """Model representing images for pages."""
+#     title = models.CharField(max_length=100)
+#     slug = models.SlugField(max_length=100, unique=True, blank=True)
+#     page_section = models.CharField(max_length=100, blank=True, help_text="e.g., homepage, about, bikes")
+#     original_image = models.ImageField(upload_to=page_image_path, validators=[
+#         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])
+#     ])
+#
+#     # Predefined image specs for common use cases
+#     hero_webp = ImageSpecField(
+#         source='original_image',
+#         processors=[ResizeToFit(1920, 1080)],
+#         format='WEBP',
+#         options={'quality': 80},
+#     )
+#     thumbnail_webp = ImageSpecField(
+#         source='original_image',
+#         processors=[ResizeToFit(300, 300)],
+#         format='WEBP',
+#         options={'quality': 70},
+#     )
+#
+#     def __str__(self):
+#         return f"{self.title} ({self.page_section})"
+#
+#     def save(self, *args, **kwargs):
+#         """Automatically generate slug from title if not provided."""
+#         if not self.slug:
+#             self.slug = slugify(self.title, allow_unicode=False).replace('-', '-')
+#             original_slug = self.slug
+#             count = 1
+#             while PageImages.objects.filter(slug=self.slug).exists():
+#                 self.slug = f"{original_slug}_{count}"
+#                 count += 1
+#         super().save(*args, **kwargs)
+#
+#     class Meta:
+#         verbose_name = 'Page Image'
+#         verbose_name_plural = 'Page Images'

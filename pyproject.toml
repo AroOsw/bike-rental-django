@@ -17,6 +17,7 @@ dependencies = [
     "pillow==11.3.0",
     "psycopg2==2.9.10",
     "pyjwt>=2.10.1",
+    "pytest-cov>=6.2.1",
     "pytest-django>=4.11.1",
     "python-dotenv==1.1.1",
     "requests>=2.32.4",

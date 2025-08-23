@@ -3,9 +3,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
+from core.models import BikeModel, BikeInstance, Reservation
 from django.contrib.auth.models import auth
 from .forms import RegistrationForm, LoginForm
-from .models import PageImages
 
 
 # Create your views here.
@@ -18,7 +18,9 @@ def index(request):
 
 def bikes(request):
     """Render the bikes page."""
-    return render(request, "bikes.html", {})
+    all_bikes = BikeInstance.objects.all()
+    print(all_bikes)
+    return render(request, "bikes.html", {"all_bikes": all_bikes})
 
 def routes(request):
     """Render the routes page."""
@@ -51,35 +53,5 @@ def logout_view(request):
     logout(request)
     messages.info(request, "Logged out successfully.")
     return redirect("index")
-
-# def login_user(request):
-#     """Render the login page."""
-#     if request.method == "POST":
-#         form = LoginForm(request, data=request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data.get("username")
-#             password = form.cleaned_data.get("password")
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                     login(request, user)
-#                     messages.info(request, f"Log In successfully")
-#                     return redirect("index")
-#     else:
-#         form = LoginForm()
-#     return render(request, "login.html", {"form": form})
-#
-
-#
-# def register(request):
-#     """Render the register page."""
-#     if request.method == "POST":
-#         form = RegistrationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, "Account created successfully")
-#             return redirect("index")
-#     else:
-#         form = RegistrationForm()
-#     return render(request, 'register.html', {"form": form})
 
 

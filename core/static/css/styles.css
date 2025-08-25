@@ -131,13 +131,13 @@ body {
   font-size: clamp(0.5rem, 1vw, 1.2rem);
 }
 
-.card-container {
+.bike-card-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.card {
+.bike-card {
   width: clamp(300px, 90vw, 340px);
   border-radius: 8px;
   overflow: hidden;
@@ -147,23 +147,23 @@ body {
   color: var(--text-dark);
 }
 
-.card img {
+.bike-card img {
   width: 100%;
   height: 200px;
 }
 
-.card-content h2,
-.card-content h3 {
+.bike-card-content h2,
+.bike-card-content h3 {
   margin: 0;
   color: var(--primary-color);
 }
 
-.card-content p {
+.bike-card-content p {
   font-size: var(--fs-400);
   font-weight: 600;
 }
 
-.card-content a {
+.bike-card-content a {
   display: flex;
   justify-content: center;
   text-decoration: none;
@@ -172,4 +172,81 @@ body {
   transition: color 0.3s;
   position: relative;
   bottom: 0.5rem;
+}
+
+.slider-wrapper {
+  position: relative;
+  width: clamp(300px, 90vw, 900px);
+  margin: 2rem auto;
+}
+
+.slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  background-color: var(--background);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  height: clamp(200px, 50vw, 600px);
+}
+
+.slider::-webkit-scrollbar {
+  display: none;
+}
+
+.slider .slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider img {
+  width: 100%;
+  height: clamp(200px, 50vw, 600px);
+  object-fit: contain;
+  object-position: center;
+}
+
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.slider-nav button {
+  background-color: var(--green);
+  font-size: xxx-large;
+  border: none;
+  color: red;
+  cursor: pointer;
+  pointer-events: auto;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.slider-nav button:hover {
+  background-color: var(--primary);
+}
+
+.bike-card-content {
+  padding: 10px 0 ;
+}
+
+.bike-card-content p {
+  margin-bottom: 0;
+}
+
+.bike-card-content-p {
+  padding: 15px 0 ;
 }

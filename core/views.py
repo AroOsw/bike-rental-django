@@ -1,11 +1,10 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from core.models import BikeModel, BikeInstance, Reservation
-from django.contrib.auth.models import auth
-from .forms import RegistrationForm, LoginForm
+
 
 
 # Create your views here.
@@ -13,14 +12,21 @@ from .forms import RegistrationForm, LoginForm
 
 def index(request):
     """Render the index page."""
-
     return render(request, "index.html", {})
 
 def bikes(request):
     """Render the bikes page."""
-    all_bikes = BikeInstance.objects.all()
-    print(all_bikes)
-    return render(request, "bikes.html", {"all_bikes": all_bikes})
+    all_bikes = BikeModel.objects.prefetch_related("instances")
+    return render(request, "bikes.html", {
+        "all_bikes": all_bikes,
+    })
+
+def bike_details(request, slug):
+    """Render the individual bike page."""
+    bike_model = get_object_or_404(BikeModel.objects.prefetch_related("instances"), slug=slug)
+    return render(request, "bike-details.html", {
+        "bike_model": bike_model,
+    })
 
 def routes(request):
     """Render the routes page."""

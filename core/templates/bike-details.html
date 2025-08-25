@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="my-6 d-flex justify-content-center align-items-center bg-dark">
+{#  <div class="">#}
+    <div class="product-page">
+      <div class="slider-wrapper">
+        <div class="slider">
+          {% if bike_model.main_instance.img_slider.url %}
+            <div class="slide">
+              <a href="#id-{{ forloop.counter }}">
+                <img src="{{ bike_model.main_instance.img_slider.url }}"
+                     alt=" Photo of {{ bike_model.brand }} - {{ bike_model.model }}"
+                     loading="lazy">
+              </a>
+              <a href="#" class="lightbox" id="id-{{ forloop.counter }}">
+                <span style="background-image: url('{{ instance.img_slider.url }}')"></span>
+              </a>
+            </div>
+          {% else %}
+            <div class="slide">
+              <img loading="lazy"
+                   src="{% static 'images/placeholder.png' %}"
+                   alt="Placeholder image">
+            </div>
+          {% endif %}
+        </div>
+        <div class="slider-nav">
+          <button class="prev" aria-label="Previous image">❮</button>
+          <button class="next" aria-label="Next image">❯</button>
+        </div>
+      </div>
+
+      <h2>{{ bike_model.brand }}</h2>
+      <h3>{{ bike_model.model }}</h3>
+      <h4>Available sizes: {{ bike_model.available_sizes|join:", " }}</h4>
+      <h4>Price per day: ${{ bike_model.price_per_day }}</h4>
+    </div>
+{#  </div>#}
+</div>
+
+{% endblock %}

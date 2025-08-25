@@ -28,6 +28,17 @@ class BikeModel(models.Model):
             self.slug = slugify(f"{self.brand} - {self.model}")
         super().save(*args, **kwargs)
 
+
+    @property
+    def main_instance(self):
+        return self.instances.first()
+
+
+    @property
+    def available_sizes(self):
+        sizes = self.instances.values_list('size', flat=True).distinct()
+        return list(sizes)
+
     def __str__(self):
         """Returns a string representation of the bike, including its brand and model."""
         return f"{self.brand} - {self.model}"
@@ -45,7 +56,7 @@ class BikeInstance(models.Model):
     bike_img = ProcessedImageField(
         upload_to="upload/bikes",
         processors=[ResizeToFit(1600, 1066)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 85},
         blank=True,
         null=True,
@@ -53,13 +64,13 @@ class BikeInstance(models.Model):
     img_thumbnail = ImageSpecField(
         source="bike_img",
         processors=[ResizeToFit(300, 200)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 75},
     )
     img_slider = ImageSpecField(
         source="bike_img",
         processors=[ResizeToFit(800, 533)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 80},
     )
 

@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
 </head>
+
 <body class="d-flex flex-column min-vh-100">
   {% if messages %}
     <div class="alert messages btn-success">
@@ -74,7 +75,7 @@
           invalidInputs[i].removeAttribute('aria-invalid');
         }
 
-      }, 5000); // Po 5 sekundach
+      }, 5000);
     });
 
   </script>

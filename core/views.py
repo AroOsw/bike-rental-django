@@ -6,26 +6,37 @@ from django.contrib import messages
 from core.models import BikeModel, BikeInstance, Reservation
 
 
-
-# Create your views here.
-
-
 def index(request):
     """Render the index page."""
     return render(request, "index.html", {})
 
-def bikes(request):
+def bikes(request, slug):
     """Render the bikes page."""
-    all_bikes = BikeModel.objects.prefetch_related("instances")
+    if slug == "all":
+        all_bikes = BikeModel.objects.prefetch_related("instances")
+        return render(request, "bikes.html", {
+            "all_bikes": all_bikes,
+
+        })
+    bike_type = BikeModel.objects.filter(type=slug).all()
+    print(bike_type)
     return render(request, "bikes.html", {
-        "all_bikes": all_bikes,
+        "all_bikes": bike_type,
     })
+
 
 def bike_details(request, slug):
     """Render the individual bike page."""
     bike_model = get_object_or_404(BikeModel.objects.prefetch_related("instances"), slug=slug)
+    pricing_data = {
+        "day_1_2": bike_model.calculate_rental_price(1),
+        "day_3_6": bike_model.calculate_rental_price(3),
+        "day_7_13": bike_model.calculate_rental_price(7),
+        "day_14": bike_model.calculate_rental_price(14),
+    }
     return render(request, "bike-details.html", {
         "bike_model": bike_model,
+        "pricing_data": pricing_data,
     })
 
 def routes(request):
@@ -59,5 +70,3 @@ def logout_view(request):
     logout(request)
     messages.info(request, "Logged out successfully.")
     return redirect("index")
-
-

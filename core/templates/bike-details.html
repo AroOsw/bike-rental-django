@@ -2,42 +2,76 @@
 {% load static %}
 
 {% block content %}
-<div class="my-6 d-flex justify-content-center align-items-center bg-dark">
-{#  <div class="">#}
-    <div class="product-page">
-      <div class="slider-wrapper">
-        <div class="slider">
-          {% if bike_model.main_instance.img_slider.url %}
-            <div class="slide">
-              <a href="#id-{{ forloop.counter }}">
-                <img src="{{ bike_model.main_instance.img_slider.url }}"
-                     alt=" Photo of {{ bike_model.brand }} - {{ bike_model.model }}"
-                     loading="lazy">
-              </a>
-              <a href="#" class="lightbox" id="id-{{ forloop.counter }}">
-                <span style="background-image: url('{{ instance.img_slider.url }}')"></span>
-              </a>
+<div class="my-6 d-flex justify-content-center align-items-center">
+  <div class="col-11 col-lg-10 col-xl-9 col-xxl-8 bg-dark">
+    <div class="m-xl-4 m-m-3 m-sm-2 m-1">
+      {% if bike_model.main_instance.img_slider.url %}
+        <img class=bike-img
+             src="{{ bike_model.main_instance.img_slider.url }}"
+             alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
+             loading="lazy">
+      {% else %}
+        <img class=bike-img
+             src="{% static 'images/placeholder.webp' %}"
+             alt="Placeholder image"
+             loading="lazy">
+      {% endif %}
+    </div>
+      <div class="m-xl-5 m-m-4 m-sm-3 m-2">
+        <div class="bike-description mx-3">
+          <h2 class="bike-details-title text-center">{{ bike_model.brand }} - {{ bike_model.model }}</h2>
+          <p>{{ bike_model.model_description }}</p>
+          <h3 class="bike-details-title">Available sizes:
+            <span>{{ bike_model.available_sizes|join:", " }}</span>
+          </h3>
+            <div class="specification">
+              <table class="styled-table">
+              <caption class="h3">Bike specification</caption>
+                <tbody>
+                  {% for key, value in bike_model.specification.items %}
+                    <tr>
+                      <th>{{ key|title }}</th>
+                      <td>{{ value }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
-          {% else %}
-            <div class="slide">
-              <img loading="lazy"
-                   src="{% static 'images/placeholder.png' %}"
-                   alt="Placeholder image">
-            </div>
-          {% endif %}
+          <div class="pricing">
+            <table class="styled-table">
+              <caption class="h3">Rental rates per day:</caption>
+              <tr>
+              <tr><th>1-2 days</th><th>฿{{ pricing_data.day_1_2 }}</th></tr>
+              <tr><th>3-6 days</th><td>฿{{ pricing_data.day_3_6 }}</td></tr>
+              <tr><th>7-13 day</th><td> ฿{{ pricing_data.day_7_13 }}</td></tr>
+              <tr><th>14-20 days</th><td>฿{{ pricing_data.day_14 }}</td></tr>
+              </tr>
+            </table>
+          </div>
+        <p>If you need for more days, ask us for individual pricing</p>
         </div>
-        <div class="slider-nav">
-          <button class="prev" aria-label="Previous image">❮</button>
-          <button class="next" aria-label="Next image">❯</button>
+        <div class="general-description">
+          <h5>Above rental rates include:</h5>
+            <ul>
+              <li>Saddlebag with spare innertube and levers</li>
+              <li>Multitool</li>
+              <li>Mini pump</li>
+              <li>2 Bottle cages</li>
+              <li>Drinking bottles</li>
+              <li>Bike holder designed for smartphones (on demand)</li>
+              <li>Cleaning</li>
+            </ul>
+          <h5>Pick up point</h5>
+          <p>Bikes are available for rental from our shop in Hua Hin, or we can deliver them to your hotel</p>
+
+          <h5>Note:</h5>
+            <p>
+              The rental day runs from 8:00 AM to 6:00 PM.
+              All rental costs are charged in Thai Baht (THB). You can pay with a credit card online without any surcharge,
+              or in cash (THB) upon bike collection.
+            </p>
         </div>
       </div>
-
-      <h2>{{ bike_model.brand }}</h2>
-      <h3>{{ bike_model.model }}</h3>
-      <h4>Available sizes: {{ bike_model.available_sizes|join:", " }}</h4>
-      <h4>Price per day: ${{ bike_model.price_per_day }}</h4>
-    </div>
-{#  </div>#}
+  </div>
 </div>
-
 {% endblock %}

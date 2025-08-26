@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
-<h1 class="text-center m-5">All Bikes</h1>
+<div class="col-xxl-11 mx-auto">
+    <section class="mx-auto bg-image flex justify-content-center"
+             style="background-image:url({% static 'webp_images/bike_path.webp' %});">
+
+        <div class="text-overlay p-2">
+          <h1 class="display-2"><span class="wild-text">Our</span> Bikes</h1>
+          <p class="welcome-p">Your journey starts here. Choose from our wide selection of high-quality bikes,
+            and get ready to experience the beauty of Thailand at your own pace.</p>
+        </div>
+        </div>
+    </section>
+  </div>
 
 
 <div class="bike-card-container">
@@ -10,7 +21,7 @@
   <div class="bike-card bg-dark">
     <img src="{{ bike.main_instance.img_thumbnail.url }}" alt="{{ bike.bike_model.brand }} - {{ bike.bike_model.model }}">
     <div class="bike-card-content">
-      <h2 color>{{ bike.brand }}</h2>
+      <h3>{{ bike.brand }}</h3>
       <h3>{{ bike.model }}</h3>
       <div class="bike-card-content-p">
         <p>Available sizes: {{ bike.available_sizes|join:", " }}</p>

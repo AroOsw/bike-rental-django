@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='pageimages',
             name='original_image',
-            field=models.ImageField(upload_to=core.models.page_image_path, validators=[django.core.validators.FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]),
+            field=models.ImageField(upload_to="images/", validators=[django.core.validators.FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]),
         ),
         migrations.AlterField(
             model_name='pageimages',

@@ -7,8 +7,9 @@ from django.utils.text import slugify
 from decimal import Decimal
 
 
-
-
+DISCOUNT_14_DAYS = Decimal("0.20")
+DISCOUNT_7_DAYS = Decimal("0.15")
+DISCOUNT_3_DAYS = Decimal("0.10")
 
 class BikeModel(models.Model):
     """Represents a general bike model his specification and available sizes."""
@@ -23,7 +24,51 @@ class BikeModel(models.Model):
     model = models.CharField(max_length=100)
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     specification = models.JSONField(default=dict, blank=True)
+    model_description = models.TextField(max_length=2000, blank=True, null=True)
     price_per_day = models.DecimalField(max_digits=10, decimal_places=2)
+    slug = models.SlugField(max_length=255, unique=False, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.brand} - {self.model}")
+        super().save(*args, **kwargs)
+
+
+    @property
+    def main_instance(self):
+        return self.instances.first()
+
+
+    @property
+    def available_sizes(self):
+        sizes = self.instances.values_list('size', flat=True).distinct()
+        return list(sizes)
+
+
+    def calculate_rental_price(self, num_days):
+        """
+        Calculates the total rental price based on the number of days.
+        Offers a discount for longer rentals.
+        """
+
+        base_price = self.price_per_day * num_days
+
+        # Example pricing tiers:
+        if num_days >= 14:
+            # 20% discount for 7 or more days
+            price_after_discount = self.price_per_day * DISCOUNT_14_DAYS
+            return self.price_per_day - price_after_discount
+        elif num_days >= 7:
+            # 15% discount for 7 or more days
+            price_after_discount = self.price_per_day * DISCOUNT_7_DAYS
+            return self.price_per_day - price_after_discount
+        elif num_days >= 3:
+            # 10% discount for 3 to 6 days
+            price_after_discount = self.price_per_day * DISCOUNT_3_DAYS
+            return self.price_per_day - price_after_discount
+        else:
+            # No discount for short rentals
+            return base_price
 
     def __str__(self):
         """Returns a string representation of the bike, including its brand and model."""
@@ -42,7 +87,7 @@ class BikeInstance(models.Model):
     bike_img = ProcessedImageField(
         upload_to="upload/bikes",
         processors=[ResizeToFit(1600, 1066)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 85},
         blank=True,
         null=True,
@@ -50,13 +95,13 @@ class BikeInstance(models.Model):
     img_thumbnail = ImageSpecField(
         source="bike_img",
         processors=[ResizeToFit(300, 200)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 75},
     )
     img_slider = ImageSpecField(
         source="bike_img",
         processors=[ResizeToFit(800, 533)],
-        format="JPEG",
+        format="WEBP",
         options={"quality": 80},
     )
 
@@ -122,48 +167,3 @@ class ChatMessage(models.Model):
         return f"Message from {self.user.username} at {self.timestamp}"
 
 
-# def page_image_path(instance, filename):
-#     """Dynamic path for storing images based on page_section and slug."""
-#     return f"{instance.page_section}/{instance.slug}/{filename}"
-#
-#
-# class PageImages(models.Model):
-#     """Model representing images for pages."""
-#     title = models.CharField(max_length=100)
-#     slug = models.SlugField(max_length=100, unique=True, blank=True)
-#     page_section = models.CharField(max_length=100, blank=True, help_text="e.g., homepage, about, bikes")
-#     original_image = models.ImageField(upload_to=page_image_path, validators=[
-#         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])
-#     ])
-#
-#     # Predefined image specs for common use cases
-#     hero_webp = ImageSpecField(
-#         source='original_image',
-#         processors=[ResizeToFit(1920, 1080)],
-#         format='WEBP',
-#         options={'quality': 80},
-#     )
-#     thumbnail_webp = ImageSpecField(
-#         source='original_image',
-#         processors=[ResizeToFit(300, 300)],
-#         format='WEBP',
-#         options={'quality': 70},
-#     )
-#
-#     def __str__(self):
-#         return f"{self.title} ({self.page_section})"
-#
-#     def save(self, *args, **kwargs):
-#         """Automatically generate slug from title if not provided."""
-#         if not self.slug:
-#             self.slug = slugify(self.title, allow_unicode=False).replace('-', '-')
-#             original_slug = self.slug
-#             count = 1
-#             while PageImages.objects.filter(slug=self.slug).exists():
-#                 self.slug = f"{original_slug}_{count}"
-#                 count += 1
-#         super().save(*args, **kwargs)
-#
-#     class Meta:
-#         verbose_name = 'Page Image'
-#         verbose_name_plural = 'Page Images'

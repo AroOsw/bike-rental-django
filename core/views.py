@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from core.models import BikeModel, BikeInstance, Reservation
+from .forms import BookingForm
 
 
 def index(request):
@@ -28,15 +29,37 @@ def bikes(request, slug):
 def bike_details(request, slug):
     """Render the individual bike page."""
     bike_model = get_object_or_404(BikeModel.objects.prefetch_related("instances"), slug=slug)
+
     pricing_data = {
         "day_1_2": bike_model.calculate_rental_price(1),
         "day_3_6": bike_model.calculate_rental_price(3),
         "day_7_13": bike_model.calculate_rental_price(7),
         "day_14": bike_model.calculate_rental_price(14),
     }
+
+
+    if request.method == "POST":
+        booking_form = BookingForm(request.POST)
+        print(booking_form.start_time)
+        print(booking_form.end_time)
+        print(booking_form.total_cost)
+        if booking_form.is_valid():
+            reservation = booking_form.save(commit=False)
+            reservation.user = request.user
+            reservation.bike_model = get_object_or_404(BikeModel, slug=slug)
+
+            reservation.save()
+            messages.success(request, "Your booking has been submitted successfully!")
+            return redirect("bike_details", slug=slug)
+        else:
+            messages.error(request, "Something went wrong. Please check the form for errors.")
+    else:
+        booking_form = BookingForm()
+
     return render(request, "bike-details.html", {
         "bike_model": bike_model,
         "pricing_data": pricing_data,
+        "form": booking_form,
     })
 
 def routes(request):

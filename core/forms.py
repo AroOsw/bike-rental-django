@@ -5,6 +5,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.forms import ModelForm, DateTimeInput
+from .models import Reservation
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 class CrispyResetPasswordForm(ResetPasswordForm):
     def __init__(self, *args, **kwargs):
@@ -157,3 +160,67 @@ class RegistrationForm(SignupForm):
                 css_class="d-flex justify-content-center my-4")
         )
 
+# class BookingForm(ModelForm):
+#     class Meta:
+#         model = Reservation
+#         fields = ['bike_instance', 'start_time', 'end_time', 'total_cost']
+#
+#     def __init__(self, *args, **kwargs):
+#         # bike_model = kwargs.pop('bike_model', None)
+#
+#         super().__init__(*args, **kwargs)
+#         self.helper = FormHelper()
+#         self.helper.form_method = "post"
+#         self.helper.form_action = reverse("reservations")
+#         self.helper.form_show_errors = True
+#         self.helper.error_text_inline = True
+#         self.helper.help_text_inline = False
+#
+#         # if bike_model:
+#         #     self.fields['bike_instance'].queryset = bike_model.instances.all()
+#         self.fields["bike_instance"].label = "Select Size"
+#         self.fields["bike_instance"].widget.attrs.update({
+#             "required": True,
+#             "class": "input-form",
+#             "placeholder": "Select Size",
+#         })
+#
+#         self.fields["start_time"].label = "Start Time"
+#         self.fields["start_time"].widget.attrs.update({
+#             "required": True,
+#             "class": "simple-datepicker input-form",
+#             "placeholder": "Start Time",
+#         })
+#
+#         self.fields["end_time"].label = "End Time"
+#         self.fields["end_time"].widget.attrs.update({
+#             "required": True,
+#             "class": "simple-datepicker input-form",
+#             "placeholder": "End Time",
+#         })
+#
+#         self.fields["total_cost"].label = "Total Cost"
+#         self.fields["total_cost"].widget.attrs.update({
+#             "readonly": True,
+#             "class": "input-form",
+#             "placeholder": "Total Cost",
+#         })
+#
+#         self.helper.layout = Layout(
+#             'bike_instance',
+#             'start_time',
+#             'end_time',
+#             'total_cost',
+#             Div(
+#                 Submit("submit", "Book Now", css_class="btn btn-success"),
+#                 css_class="d-flex justify-content-center my-4")
+#         )
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = "__all__"
+        widgets = {
+            "start_time": DateTimePickerInput(),
+            "end_time": DateTimePickerInput(),
+        }

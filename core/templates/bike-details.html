@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static crispy_forms_tags %}
+
 
 {% block content %}
 <div class="my-6 d-flex justify-content-center align-items-center">
@@ -17,39 +18,44 @@
              loading="lazy">
       {% endif %}
     </div>
-      <div class="m-xl-5 m-m-4 m-sm-3 m-2">
-        <div class="bike-description mx-3">
-          <h2 class="bike-details-title text-center">{{ bike_model.brand }} - {{ bike_model.model }}</h2>
-          <p>{{ bike_model.model_description }}</p>
-          <h3 class="bike-details-title">Available sizes:
-            <span>{{ bike_model.available_sizes|join:", " }}</span>
-          </h3>
-            <div class="specification">
-              <table class="styled-table">
-              <caption class="h3">Bike specification</caption>
-                <tbody>
-                  {% for key, value in bike_model.specification.items %}
-                    <tr>
-                      <th>{{ key|title }}</th>
-                      <td>{{ value }}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          <div class="pricing">
-            <table class="styled-table">
-              <caption class="h3">Rental rates per day:</caption>
-              <tr>
-              <tr><th>1-2 days</th><th>฿{{ pricing_data.day_1_2 }}</th></tr>
-              <tr><th>3-6 days</th><td>฿{{ pricing_data.day_3_6 }}</td></tr>
-              <tr><th>7-13 day</th><td> ฿{{ pricing_data.day_7_13 }}</td></tr>
-              <tr><th>14-20 days</th><td>฿{{ pricing_data.day_14 }}</td></tr>
-              </tr>
-            </table>
-          </div>
-        <p>If you need for more days, ask us for individual pricing</p>
+    <div class="m-xl-5 m-m-4 m-sm-3 m-2">
+      <div class="mx-3 text-center">
+        <h2 class="bike-details-title text-center">{{ bike_model.brand }} - {{ bike_model.model }}</h2>
+        <p>{{ bike_model.model_description }}</p>
+      <hr>
+        <div class="size-and-booking d-flex justify-content-center">
+          <h3 class="bike-details-title">Available sizes: {{ bike_model.available_sizes|join:", " }}</h3>
+          <a href="#booking-form" class="btn btn-success mx-5">Book now</a>
         </div>
+      <hr>
+        <div class="specification">
+          <table class="styled-table">
+          <caption class="h3">Bike specification</caption>
+            <tbody>
+              {% for key, value in bike_model.specification.items %}
+                <tr>
+                  <th>{{ key|title }}</th>
+                  <td>{{ value }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      <hr>
+        <div class="pricing">
+          <table class="styled-table">
+            <caption class="h3">Rental rates per day:</caption>
+            <tr>
+            <tr><th>1-2 days</th><th>฿{{ pricing_data.day_1_2 }}</th></tr>
+            <tr><th>3-6 days</th><td>฿{{ pricing_data.day_3_6 }}</td></tr>
+            <tr><th>7-13 day</th><td> ฿{{ pricing_data.day_7_13 }}</td></tr>
+            <tr><th>14-20 days</th><td>฿{{ pricing_data.day_14 }}</td></tr>
+            </tr>
+          </table>
+        </div>
+          <p>If you need for more days, ask us for individual pricing</p>
+        </div>
+      <hr>
         <div class="general-description">
           <h5>Above rental rates include:</h5>
             <ul>
@@ -71,7 +77,14 @@
               or in cash (THB) upon bike collection.
             </p>
         </div>
-      </div>
+      <hr>
+        <div id="booking-form" class="reservation-section">
+          <h3 class="bike-details-title text-center">Book your bike</h3>
+
+           {% crispy form  %}
+
+        </div>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'imagekit',
+    'bootstrap_datepicker_plus',
 ]
 
 

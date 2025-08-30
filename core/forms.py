@@ -1,13 +1,15 @@
+import datetime
 from django import forms
 from django.contrib.auth.models import User
 from allauth.account.forms import LoginForm as AllauthLoginForm, SignupForm, ResetPasswordForm
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div
+from crispy_forms.layout import Submit, Layout, Div, Field, Row, Column
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.forms import ModelForm, DateTimeInput
-from .models import Reservation
-from bootstrap_datepicker_plus.widgets import DateTimePickerInput
+from django.utils import timezone
+from .models import Reservation, BikeInstance
+from django.db.models import Q
+
 
 class CrispyResetPasswordForm(ResetPasswordForm):
     def __init__(self, *args, **kwargs):
@@ -160,67 +162,82 @@ class RegistrationForm(SignupForm):
                 css_class="d-flex justify-content-center my-4")
         )
 
-# class BookingForm(ModelForm):
-#     class Meta:
-#         model = Reservation
-#         fields = ['bike_instance', 'start_time', 'end_time', 'total_cost']
-#
-#     def __init__(self, *args, **kwargs):
-#         # bike_model = kwargs.pop('bike_model', None)
-#
-#         super().__init__(*args, **kwargs)
-#         self.helper = FormHelper()
-#         self.helper.form_method = "post"
-#         self.helper.form_action = reverse("reservations")
-#         self.helper.form_show_errors = True
-#         self.helper.error_text_inline = True
-#         self.helper.help_text_inline = False
-#
-#         # if bike_model:
-#         #     self.fields['bike_instance'].queryset = bike_model.instances.all()
-#         self.fields["bike_instance"].label = "Select Size"
-#         self.fields["bike_instance"].widget.attrs.update({
-#             "required": True,
-#             "class": "input-form",
-#             "placeholder": "Select Size",
-#         })
-#
-#         self.fields["start_time"].label = "Start Time"
-#         self.fields["start_time"].widget.attrs.update({
-#             "required": True,
-#             "class": "simple-datepicker input-form",
-#             "placeholder": "Start Time",
-#         })
-#
-#         self.fields["end_time"].label = "End Time"
-#         self.fields["end_time"].widget.attrs.update({
-#             "required": True,
-#             "class": "simple-datepicker input-form",
-#             "placeholder": "End Time",
-#         })
-#
-#         self.fields["total_cost"].label = "Total Cost"
-#         self.fields["total_cost"].widget.attrs.update({
-#             "readonly": True,
-#             "class": "input-form",
-#             "placeholder": "Total Cost",
-#         })
-#
-#         self.helper.layout = Layout(
-#             'bike_instance',
-#             'start_time',
-#             'end_time',
-#             'total_cost',
-#             Div(
-#                 Submit("submit", "Book Now", css_class="btn btn-success"),
-#                 css_class="d-flex justify-content-center my-4")
-#         )
-
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Reservation
-        fields = "__all__"
+        fields = ['bike_instance', 'start_time', 'end_time', 'total_cost']
         widgets = {
-            "start_time": DateTimePickerInput(),
-            "end_time": DateTimePickerInput(),
+            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
+
+
+    def __init__(self, *args, **kwargs):
+        bike_model = kwargs.pop('bike_model', None)
+        print("Bike model in form:", bike_model)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_show_errors = True
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = False
+
+        if bike_model:
+            self.fields['bike_instance'].queryset = BikeInstance.objects.filter(bike_model=bike_model)
+        else:
+            self.fields['bike_instance'].queryset = BikeInstance.objects.filter(status='available')
+
+
+        self.fields["bike_instance"].label = "Select Size"
+        self.fields["bike_instance"].widget.attrs.update({
+            "required": True,
+            "class": "input-form",
+            "placeholder": "Select Size",
+        })
+
+        self.fields["start_time"].label = "Start Time"
+        self.fields["start_time"].widget.attrs.update({
+            "required": True,
+            "type": "datetime-local",
+            "placeholder": "Start Time",
+        })
+
+        self.fields["end_time"].label = "End Time"
+        self.fields["end_time"].widget.attrs.update({
+            "required": True,
+            "type": "datetime-local",
+            "placeholder": "End Time",
+        })
+        self.helper.layout = Layout(
+            'bike_instance',
+            Row(
+                Column('start_time', css_class=''),
+                Column('end_time', css_class=''),
+                css_class='row'
+            ),
+            Div(
+                Submit("submit", "Book Now", css_class="btn btn-success"),
+                css_class="d-flex justify-content-center my-4")
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        now = timezone.now()
+
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        selected_bike = cleaned_data.get('bike_instance')
+
+        if start_time < now - timezone.timedelta(minutes=1):
+            raise forms.ValidationError("Please choose a correct date. The date cannot be in the past.")
+
+        elif start_time and end_time and end_time <= start_time:
+            raise forms.ValidationError("The end date must be after the start date.")
+
+        if start_time and end_time and selected_bike:
+            is_reserved = Reservation.objects.filter(Q(start_time__lte=end_time) & Q(end_time__gte=start_time),
+                                                    bike_instance=selected_bike).exists()
+            if is_reserved:
+                raise forms.ValidationError("This bike is not available for the selected dates.")
+
+        return cleaned_data

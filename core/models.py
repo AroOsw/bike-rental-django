@@ -47,7 +47,7 @@ class BikeModel(models.Model):
 
     def calculate_rental_price(self, num_days):
         """
-        Calculates the total rental price based on the number of days.
+        Calculates rental price based on the number of days.
         Offers a discount for longer rentals.
         """
 
@@ -114,7 +114,7 @@ class BikeInstance(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="available")
 
     def __str__(self):
-        return f"{self.bike_model.brand} {self.bike_model.model} - Size: {self.size} - S/N {self.serial_number}"
+        return f"{self.bike_model.brand} {self.bike_model.model} - Size: {self.size}"
 
     class Meta:
         verbose_name_plural = "Bicycle Instances"
@@ -130,7 +130,7 @@ class Reservation(models.Model):
     end_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_confirmed = models.BooleanField(default=False)
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     payment_status = models.CharField(max_length=20, default="pending")
 
     def __str__(self):

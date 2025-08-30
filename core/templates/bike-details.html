@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load static crispy_forms_tags %}
+{% load static %}
+{% load crispy_forms_tags %}
 
 
 {% block content %}
@@ -80,11 +81,114 @@
       <hr>
         <div id="booking-form" class="reservation-section">
           <h3 class="bike-details-title text-center">Book your bike</h3>
-
-           {% crispy form  %}
-
+          <div class="d-flex justify-content-center">
+            <div class="col-12 col-md-10 ">
+                {% crispy form %}
+            </div>
+          </div>
         </div>
     </div>
   </div>
 </div>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bikeSelect = document.getElementById('id_bike_instance');
+        const startTimeInput = document.getElementById('id_start_time');
+        const endTimeInput = document.getElementById('id_end_time');
+
+        let fpStartTime = null;
+        let fpEndTime = null;
+
+        function initializeFlatpickr(reservations) {
+            const reservationRanges = reservations.map(res => ({
+                from: new Date(res.start_time),
+                to: new Date(res.end_time)
+            }));
+
+            if (fpStartTime) fpStartTime.destroy();
+            if (fpEndTime) fpEndTime.destroy();
+
+            const flatpickrConfig = {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: "today",
+                minTime: "08:00",
+                maxTime: "18:00",
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const day = dayElem.dateObj;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    dayElem.classList.remove('available-day', 'reserved-day', 'past-day');
+
+                    if (day < today) {
+                        dayElem.classList.add('past-day');
+                        return;
+                    }
+
+                    let isReserved = false;
+                    for (const res of reservationRanges) {
+                        const resFrom = new Date(res.from);
+                        const resTo = new Date(res.to);
+                        resFrom.setHours(0, 0, 0, 0);
+                        resTo.setHours(23, 59, 59, 999);
+
+                        if (day >= resFrom && day <= resTo) {
+                            dayElem.classList.add('reserved-day');
+                            isReserved = true;
+                            break;
+                        }
+                    }
+
+                    if (!isReserved) {
+                        dayElem.classList.add('available-day');
+                    }
+                }
+            };
+
+            fpStartTime = flatpickr(startTimeInput, {
+                ...flatpickrConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        fpEndTime.set('minDate', selectedDates[0]);
+                    }
+                }
+            });
+
+            fpEndTime = flatpickr(endTimeInput, {
+                ...flatpickrConfig,
+            });
+        }
+
+        function fetchReservations(bikeInstanceId) {
+            if (!bikeInstanceId) {
+                initializeFlatpickr([]);
+                return;
+            }
+            const url = `{% url 'get_bike_reservations' 0 %}`.replace('0', bikeInstanceId);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.reservations) {
+                        initializeFlatpickr(data.reservations);
+                    }
+                })
+                .catch(error => console.error('Error fetching reservations:', error));
+        }
+
+        bikeSelect.addEventListener('change', (event) => {
+            fetchReservations(event.target.value);
+        });
+
+        if (bikeSelect.value) {
+            fetchReservations(bikeSelect.value);
+        } else {
+            initializeFlatpickr([]);
+        }
+    });
+</script>
 {% endblock %}

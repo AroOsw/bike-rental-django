@@ -3,18 +3,16 @@
 
 {% block content %}
 <div class="col-xxl-11 mx-auto">
-    <section class="mx-auto bg-image flex justify-content-center"
-             style="background-image:url({% static 'webp_images/bike_path.webp' %});">
+  <section class="mx-auto bg-image flex justify-content-center"
+           style="background-image:url({% static 'webp_images/bike_path.webp' %});">
 
-        <div class="text-overlay p-2">
-          <h1 class="display-2"><span class="wild-text">Our</span> Bikes</h1>
-          <p class="welcome-p">Your journey starts here. Choose from our wide selection of high-quality bikes,
-            and get ready to experience the beauty of Thailand at your own pace.</p>
-        </div>
-        </div>
-    </section>
-  </div>
-
+    <div class="text-overlay p-2">
+      <h1 class="display-2"><span class="wild-text">Our</span> Bikes</h1>
+      <p class="welcome-p">Your journey starts here. Choose from our wide selection of high-quality bikes,
+          and get ready to experience the beauty of Thailand at your own pace.</p>
+    </div>
+  </section>
+</div>
 
 <div class="bike-card-container">
 {% for bike in all_bikes %}
@@ -27,7 +25,7 @@
         <p>Available sizes: {{ bike.available_sizes|join:", " }}</p>
         <p>Price per day: ฿{{ bike.price_per_day }}</p>
       </div>
-      <a href="{% url 'bike_details' bike.slug %}" class="button">View Details</a>
+      <a href="{% url 'bike_details' bike.slug %}" class="btn btn-success">View Details</a>
     </div>
   </div>
   {% endfor %}

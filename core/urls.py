@@ -7,6 +7,7 @@ urlpatterns = [
     path("bike-details/<str:slug>", views.bike_details, name="bike_details"),
     path("reservations/", views.reservations, name="reservations"),
     path("api/bike-reservations/<int:bike_instance_id>", views.get_bike_reservations, name="get_bike_reservations"),
+    path('api/calculate-price/<int:bike_model_id>/', views.calculate_price_ajax, name='calculate_price_ajax'),
     path("contact/", views.contact, name="contact"),
     path("routes/", views.routes, name="routes"),
     path("terms/", views.terms, name="terms"),

@@ -216,7 +216,9 @@ p { font-size: var(--p-fluid); }
   justify-content: center;
 }
 
-
+.general-description li{
+  font-size: var(--p-fluid);
+}
 .styled-table {
   border-collapse: collapse;
   margin: 0.6rem 0;
@@ -440,3 +442,20 @@ span.flatpickr-weekday {
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
 /*End of calendar style*/
+
+.price-panel {
+    background-color: #2b3035;
+    border: 1px solid #495057;
+    color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.price-panel h4 {
+    color: #f8f9fa;
+}
+
+.price-panel .text-muted {
+    color: #adb5bd !important;
+}

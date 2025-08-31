@@ -13,7 +13,6 @@ DISCOUNT_3_DAYS = Decimal("0.10")
 
 class BikeModel(models.Model):
     """Represents a general bike model his specification and available sizes."""
-
     TYPE_CHOICES = [('road', 'Road'),
         ('mountain', 'Mountain'),
         ('electric', 'Electric'),
@@ -46,29 +45,17 @@ class BikeModel(models.Model):
 
 
     def calculate_rental_price(self, num_days):
-        """
-        Calculates rental price based on the number of days.
-        Offers a discount for longer rentals.
-        """
+        """Calculates rental price based on the number of days. Offers a discount for longer rentals."""
+        price_per_day = self.price_per_day
 
-        base_price = self.price_per_day * num_days
-
-        # Example pricing tiers:
         if num_days >= 14:
-            # 20% discount for 7 or more days
-            price_after_discount = self.price_per_day * DISCOUNT_14_DAYS
-            return self.price_per_day - price_after_discount
+            price_per_day *= (1 - DISCOUNT_14_DAYS)
         elif num_days >= 7:
-            # 15% discount for 7 or more days
-            price_after_discount = self.price_per_day * DISCOUNT_7_DAYS
-            return self.price_per_day - price_after_discount
+            price_per_day *= (1 - DISCOUNT_7_DAYS)
         elif num_days >= 3:
-            # 10% discount for 3 to 6 days
-            price_after_discount = self.price_per_day * DISCOUNT_3_DAYS
-            return self.price_per_day - price_after_discount
-        else:
-            # No discount for short rentals
-            return base_price
+            price_per_day *= (1 - DISCOUNT_3_DAYS)
+
+        return price_per_day
 
     def __str__(self):
         """Returns a string representation of the bike, including its brand and model."""
@@ -80,7 +67,6 @@ class BikeModel(models.Model):
 
 class BikeInstance(models.Model):
     """Represent specific bike to rent"""
-
     bike_model = models.ForeignKey(BikeModel, on_delete=models.CASCADE, related_name="instances")
     size = models.CharField(max_length=10)
     serial_number = models.CharField(max_length=100, unique=True)
@@ -123,7 +109,6 @@ class BikeInstance(models.Model):
 
 class Reservation(models.Model):
     """Model representing bike reservation through user."""
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     bike_instance = models.ForeignKey(BikeInstance, on_delete=models.CASCADE, related_name="reservations")
     start_time = models.DateTimeField()
@@ -157,7 +142,6 @@ class Reservation(models.Model):
 
 class ChatMessage(models.Model):
     """Model representing a chat message in the system."""
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)

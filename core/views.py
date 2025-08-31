@@ -62,9 +62,25 @@ def bike_details(request, slug):
         "form": booking_form,
     })
 
-def routes(request):
-    """Render the routes page."""
-    return render(request, "routes.html", {})
+
+def calculate_price_ajax(request, bike_model_id):
+    """Simply endpoint to calculate price."""
+    try:
+        days = int(request.GET.get('days', 1))
+        bike_model = BikeModel.objects.get(id=bike_model_id)
+        price_per_day_after_discount = bike_model.calculate_rental_price(days)
+        print(f"Per day: {price_per_day_after_discount}")
+        total_price = price_per_day_after_discount * days
+        print(f"Total: {total_price}")
+
+        return JsonResponse({
+            'total_price': float(total_price),
+            'price_per_day': float(price_per_day_after_discount),
+            'days': days
+        })
+    except BikeModel.DoesNotExist:
+        return JsonResponse({'error': 'Bike not found'}, status=404)
+
 
 def get_bike_reservations(request, bike_instance_id):
     """API endpoint to get reservations for a specific bike instance."""
@@ -90,6 +106,10 @@ def reservations(request):
         })
     return render(request, "reservations.html", {
     })
+
+def routes(request):
+    """Render the routes page."""
+    return render(request, "routes.html", {})
 
 def contact(request):
     """Render the contact page."""

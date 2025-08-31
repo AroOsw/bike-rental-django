@@ -2,7 +2,6 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-
 {% block content %}
 <div class="my-6 d-flex justify-content-center align-items-center">
   <div class="col-11 col-lg-10 col-xl-9 col-xxl-8 bg-dark">
@@ -74,23 +73,42 @@
           <h5>Note:</h5>
             <p>
               The rental day runs from 8:00 AM to 6:00 PM.
-              All rental costs are charged in Thai Baht (THB). You can pay with a credit card online without any surcharge,
-              or in cash (THB) upon bike collection.
+              All rental costs are charged in Thai Baht (THB).
+              You can pay with a credit card or in cash (THB) upon bike collection.
             </p>
         </div>
       <hr>
         <div id="booking-form" class="reservation-section">
           <h3 class="bike-details-title text-center">Book your bike</h3>
           <div class="d-flex justify-content-center">
-            <div class="col-12 col-md-10 ">
-                {% crispy form %}
+            <div class="col-12 col-md-10">
+              {% crispy form %}
+              <div id="price-calculator" class="price-panel mb-4" style="display: none;">
+                <h4 class="bike-details-title mb-3 text-center">
+                  <i class="bi bi-calculator"></i> Rental Cost
+                </h4>
+                <hr>
+                <div class="row text-center">
+                  <div class="col-4">
+                    <small class="text-muted">Days</small>
+                    <p class="h5 mb-0"><span id="rental-days">0</span></p>
+                  </div>
+                  <div class="col-4">
+                    <small class="text-muted">Price per Day</small>
+                    <p class="h5 mb-0">฿<span id="price-per-day">0</span></p>
+                  </div>
+                  <div class="col-4">
+                    <small class="text-muted">Total Price</small>
+                    <h4 class="mb-0">฿<span id="total-price">0</span></h4>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
     </div>
   </div>
 </div>
-
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -102,6 +120,42 @@
 
         let fpStartTime = null;
         let fpEndTime = null;
+
+        function updatePriceDisplay() {
+            const startDate = startTimeInput.value;
+            const endDate = endTimeInput.value;
+
+            if (!startDate || !endDate) {
+                document.getElementById('price-calculator').style.display = 'none';
+                return;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            const startDay = new Date(start);
+            startDay.setHours(0, 0, 0, 0);
+
+            const endDay = new Date(end);
+            endDay.setHours(23, 59, 59, 999);
+
+            let numDays = Math.ceil((endDay - startDay) / (1000 * 60 * 60 * 24));
+            if (numDays < 1) numDays = 1;
+
+            const url = `{% url 'calculate_price_ajax' bike_model.id %}?days=${numDays}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        document.getElementById('price-calculator').style.display = 'block';
+                        document.getElementById('rental-days').textContent = numDays;
+
+                        document.getElementById('price-per-day').textContent = data.price_per_day.toFixed(0);
+                        document.getElementById('total-price').textContent = data.total_price.toFixed(0);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
         function initializeFlatpickr(reservations) {
             const reservationRanges = reservations.map(res => ({
@@ -116,6 +170,7 @@
                 enableTime: true,
                 dateFormat: "Y-m-d H:i",
                 minDate: "today",
+                time_24hr: true,
                 minTime: "08:00",
                 maxTime: "18:00",
                 onDayCreate: function(dObj, dStr, fp, dayElem) {
@@ -155,12 +210,16 @@
                 onChange: function(selectedDates, dateStr, instance) {
                     if (selectedDates.length > 0) {
                         fpEndTime.set('minDate', selectedDates[0]);
+                        updatePriceDisplay();
                     }
                 }
             });
 
             fpEndTime = flatpickr(endTimeInput, {
                 ...flatpickrConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    updatePriceDisplay();
+                }
             });
         }
 
@@ -182,6 +241,7 @@
 
         bikeSelect.addEventListener('change', (event) => {
             fetchReservations(event.target.value);
+            document.getElementById('price-calculator').style.display = 'none';
         });
 
         if (bikeSelect.value) {

@@ -174,7 +174,6 @@ class BookingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         bike_model = kwargs.pop('bike_model', None)
-        print("Bike model in form:", bike_model)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "post"

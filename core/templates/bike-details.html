@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="my-6 d-flex justify-content-center align-items-center">
+  <div class="col-11 col-lg-10 col-xl-9 col-xxl-8 bg-dark">
+    <div class="m-xl-4 m-m-3 m-sm-2 m-1">
+      {% if bike_model.main_instance.img_slider.url %}
+        <img class=bike-img
+             src="{{ bike_model.main_instance.img_slider.url }}"
+             alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
+             loading="lazy">
+      {% else %}
+        <img class=bike-img
+             src="{% static 'images/placeholder.webp' %}"
+             alt="Placeholder image"
+             loading="lazy">
+      {% endif %}
+    </div>
+    <div class="m-xl-5 m-m-4 m-sm-3 m-2">
+      <div class="mx-3 text-center">
+        <h2 class="bike-details-title text-center">{{ bike_model.brand }} - {{ bike_model.model }}</h2>
+        <p>{{ bike_model.model_description }}</p>
+      <hr>
+        <div class="size-and-booking d-flex justify-content-center">
+          <h3 class="bike-details-title">Available sizes: {{ bike_model.available_sizes|join:", " }}</h3>
+          <a href="#booking-form" class="btn btn-success mx-5">Book now</a>
+        </div>
+      <hr>
+        <div class="specification">
+          <table class="styled-table">
+          <caption class="h3">Bike specification</caption>
+            <tbody>
+              {% for key, value in bike_model.specification.items %}
+                <tr>
+                  <th>{{ key|title }}</th>
+                  <td>{{ value }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      <hr>
+        <div class="pricing">
+          <table class="styled-table">
+            <caption class="h3">Rental rates per day:</caption>
+            <tr>
+            <tr><th>1-2 days</th><th>฿{{ pricing_data.day_1_2 }}</th></tr>
+            <tr><th>3-6 days</th><td>฿{{ pricing_data.day_3_6 }}</td></tr>
+            <tr><th>7-13 day</th><td> ฿{{ pricing_data.day_7_13 }}</td></tr>
+            <tr><th>14-20 days</th><td>฿{{ pricing_data.day_14 }}</td></tr>
+            </tr>
+          </table>
+        </div>
+          <p>If you need for more days, ask us for individual pricing</p>
+        </div>
+      <hr>
+        <div class="general-description">
+          <h5>Above rental rates include:</h5>
+            <ul>
+              <li>Saddlebag with spare innertube and levers</li>
+              <li>Multitool</li>
+              <li>Mini pump</li>
+              <li>2 Bottle cages</li>
+              <li>Drinking bottles</li>
+              <li>Bike holder designed for smartphones (on demand)</li>
+              <li>Cleaning</li>
+            </ul>
+          <h5>Pick up point</h5>
+          <p>Bikes are available for rental from our shop in Hua Hin, or we can deliver them to your hotel</p>
+
+          <h5>Note:</h5>
+            <p>
+              The rental day runs from 8:00 AM to 6:00 PM.
+              All rental costs are charged in Thai Baht (THB).
+              You can pay with a credit card or in cash (THB) upon bike collection.
+            </p>
+        </div>
+      <hr>
+        <div id="booking-form" class="reservation-section">
+          <h3 class="bike-details-title text-center">Book your bike</h3>
+          <div class="d-flex justify-content-center">
+            <div class="col-12 col-md-10">
+              {% crispy form %}
+              <div id="price-calculator" class="price-panel mb-4" style="display: none;">
+                <h4 class="bike-details-title mb-3 text-center">
+                  <i class="bi bi-calculator"></i> Rental Cost
+                </h4>
+                <hr>
+                <div class="row text-center">
+                  <div class="col-4">
+                    <small class="text-muted">Days</small>
+                    <p class="h5 mb-0"><span id="rental-days">0</span></p>
+                  </div>
+                  <div class="col-4">
+                    <small class="text-muted">Price per Day</small>
+                    <p class="h5 mb-0">฿<span id="price-per-day">0</span></p>
+                  </div>
+                  <div class="col-4">
+                    <small class="text-muted">Total Price</small>
+                    <h4 class="mb-0">฿<span id="total-price">0</span></h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bikeSelect = document.getElementById('id_bike_instance');
+        const startTimeInput = document.getElementById('id_start_time');
+        const endTimeInput = document.getElementById('id_end_time');
+
+        let fpStartTime = null;
+        let fpEndTime = null;
+
+        function updatePriceDisplay() {
+            const startDate = startTimeInput.value;
+            const endDate = endTimeInput.value;
+
+            if (!startDate || !endDate) {
+                document.getElementById('price-calculator').style.display = 'none';
+                return;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            const startDay = new Date(start);
+            startDay.setHours(0, 0, 0, 0);
+
+            const endDay = new Date(end);
+            endDay.setHours(23, 59, 59, 999);
+
+            let numDays = Math.ceil((endDay - startDay) / (1000 * 60 * 60 * 24));
+            if (numDays < 1) numDays = 1;
+
+            const url = `{% url 'calculate_price_ajax' bike_model.id %}?days=${numDays}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        document.getElementById('price-calculator').style.display = 'block';
+                        document.getElementById('rental-days').textContent = numDays;
+
+                        document.getElementById('price-per-day').textContent = data.price_per_day.toFixed(0);
+                        document.getElementById('total-price').textContent = data.total_price.toFixed(0);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function initializeFlatpickr(reservations) {
+            const reservationRanges = reservations.map(res => ({
+                from: new Date(res.start_time),
+                to: new Date(res.end_time)
+            }));
+
+            if (fpStartTime) fpStartTime.destroy();
+            if (fpEndTime) fpEndTime.destroy();
+
+            const flatpickrConfig = {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: "today",
+                time_24hr: true,
+                minTime: "08:00",
+                maxTime: "18:00",
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const day = dayElem.dateObj;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    dayElem.classList.remove('available-day', 'reserved-day', 'past-day');
+
+                    if (day < today) {
+                        dayElem.classList.add('past-day');
+                        return;
+                    }
+
+                    let isReserved = false;
+                    for (const res of reservationRanges) {
+                        const resFrom = new Date(res.from);
+                        const resTo = new Date(res.to);
+                        resFrom.setHours(0, 0, 0, 0);
+                        resTo.setHours(23, 59, 59, 999);
+
+                        if (day >= resFrom && day <= resTo) {
+                            dayElem.classList.add('reserved-day');
+                            isReserved = true;
+                            break;
+                        }
+                    }
+
+                    if (!isReserved) {
+                        dayElem.classList.add('available-day');
+                    }
+                }
+            };
+
+            fpStartTime = flatpickr(startTimeInput, {
+                ...flatpickrConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        fpEndTime.set('minDate', selectedDates[0]);
+                        updatePriceDisplay();
+                    }
+                }
+            });
+
+            fpEndTime = flatpickr(endTimeInput, {
+                ...flatpickrConfig,
+                onChange: function(selectedDates, dateStr, instance) {
+                    updatePriceDisplay();
+                }
+            });
+        }
+
+        function fetchReservations(bikeInstanceId) {
+            if (!bikeInstanceId) {
+                initializeFlatpickr([]);
+                return;
+            }
+            const url = `{% url 'get_bike_reservations' 0 %}`.replace('0', bikeInstanceId);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.reservations) {
+                        initializeFlatpickr(data.reservations);
+                    }
+                })
+                .catch(error => console.error('Error fetching reservations:', error));
+        }
+
+        bikeSelect.addEventListener('change', (event) => {
+            fetchReservations(event.target.value);
+            document.getElementById('price-calculator').style.display = 'none';
+        });
+
+        if (bikeSelect.value) {
+            fetchReservations(bikeSelect.value);
+        } else {
+            initializeFlatpickr([]);
+        }
+    });
+</script>
+{% endblock %}

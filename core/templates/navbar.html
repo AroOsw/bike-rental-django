@@ -11,14 +11,15 @@
             <a class="nav-link active" aria-current="page" href="{% url "index" %}">Home</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="{% url "bikes" %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Bikes
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Road</a></li>
-              <li><a class="dropdown-item" href="#">MTB</a></li>
-              <li><a class="dropdown-item" href="#">Electric</a></li>
-              <li><a class="dropdown-item" href="#">Trekking</a></li>
+              <li><a class="dropdown-item" href="{% url "bikes" "all" %}">All</a></li>
+              <li><a class="dropdown-item" href="{% url "bikes" "road" %}">Road</a></li>
+              <li><a class="dropdown-item" href="{% url "bikes" "mountain" %}">Mountain</a></li>
+              <li><a class="dropdown-item" href="{% url "bikes" "electric" %}">Electric</a></li>
+              <li><a class="dropdown-item" href="{% url "bikes" "trekking" %}">Trekking</a></li>
             </ul>
           </li>
           <li class="nav-item">

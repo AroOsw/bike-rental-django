@@ -1,32 +1,115 @@
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
-from django.contrib.auth.models import auth
-from .forms import RegistrationForm, LoginForm
-from .models import PageImages
-
-
-# Create your views here.
+from core.models import BikeModel, BikeInstance, Reservation
+from .forms import BookingForm
+from django.http import JsonResponse
 
 
 def index(request):
     """Render the index page."""
-
     return render(request, "index.html", {})
 
-def bikes(request):
+def bikes(request, slug):
     """Render the bikes page."""
-    return render(request, "bikes.html", {})
+    if slug == "all":
+        all_bikes = BikeModel.objects.prefetch_related("instances")
+        return render(request, "bikes.html", {
+            "all_bikes": all_bikes,
+
+        })
+    bike_type = BikeModel.objects.filter(type=slug).all()
+    print(bike_type)
+    return render(request, "bikes.html", {
+        "all_bikes": bike_type,
+    })
+
+
+def bike_details(request, slug):
+    """Render the individual bike page."""
+    bike_model = get_object_or_404(BikeModel.objects.prefetch_related("instances"), slug=slug)
+
+    pricing_data = {
+        "day_1_2": bike_model.calculate_rental_price(1),
+        "day_3_6": bike_model.calculate_rental_price(3),
+        "day_7_13": bike_model.calculate_rental_price(7),
+        "day_14": bike_model.calculate_rental_price(14),
+    }
+
+    if request.method == "POST":
+        booking_form = BookingForm(request.POST, bike_model=bike_model)
+        if booking_form.is_valid():
+            booking = booking_form.save(commit=False)
+            booking.start_time = booking_form.cleaned_data["start_time"]
+            booking.end_time = booking_form.cleaned_data["end_time"]
+            booking.user = request.user
+            booking.bike_model = bike_model
+            booking.save()
+            messages.success(request, "Your booking has been submitted successfully!")
+            return redirect("bike_details", slug=slug)
+        else:
+            messages.error(request, "Something went wrong. Please check the form for errors.")
+            # print(booking_form.errors.as_text())
+    else:
+        booking_form = BookingForm(bike_model=bike_model)
+
+    return render(request, "bike-details.html", {
+        "bike_model": bike_model,
+        "pricing_data": pricing_data,
+        "form": booking_form,
+    })
+
+
+def calculate_price_ajax(request, bike_model_id):
+    """Simply endpoint to calculate price."""
+    try:
+        days = int(request.GET.get('days', 1))
+        bike_model = BikeModel.objects.get(id=bike_model_id)
+        price_per_day_after_discount = bike_model.calculate_rental_price(days)
+        print(f"Per day: {price_per_day_after_discount}")
+        total_price = price_per_day_after_discount * days
+        print(f"Total: {total_price}")
+
+        return JsonResponse({
+            'total_price': float(total_price),
+            'price_per_day': float(price_per_day_after_discount),
+            'days': days
+        })
+    except BikeModel.DoesNotExist:
+        return JsonResponse({'error': 'Bike not found'}, status=404)
+
+
+def get_bike_reservations(request, bike_instance_id):
+    """API endpoint to get reservations for a specific bike instance."""
+    try:
+        bike_instance = BikeInstance.objects.get(id=bike_instance_id)
+        reservations = Reservation.objects.filter(bike_instance=bike_instance).values("start_time", "end_time")
+        reservation_list = [
+            {
+                "start_time": res["start_time"].isoformat(),
+                "end_time": res["end_time"].isoformat()
+            } for res in reservations
+        ]
+        return JsonResponse({"reservations": reservation_list})
+    except BikeInstance.DoesNotExist:
+        return JsonResponse({"error": "Bike instance not found."}, status=404)
+
+def reservations(request):
+    """Render the reservations page."""
+    if request.user.is_authenticated:
+        user_reservations = Reservation.objects.filter(user=request.user).order_by("-created_at")
+        return render(request, "reservations.html", {
+            "reservations": user_reservations,
+        })
+    return render(request, "reservations.html", {
+    })
 
 def routes(request):
     """Render the routes page."""
     return render(request, "routes.html", {})
-
-def reservations(request):
-    """Render the reservations page."""
-    return render(request, "reservations.html", {})
 
 def contact(request):
     """Render the contact page."""
@@ -51,35 +134,3 @@ def logout_view(request):
     logout(request)
     messages.info(request, "Logged out successfully.")
     return redirect("index")
-
-# def login_user(request):
-#     """Render the login page."""
-#     if request.method == "POST":
-#         form = LoginForm(request, data=request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data.get("username")
-#             password = form.cleaned_data.get("password")
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                     login(request, user)
-#                     messages.info(request, f"Log In successfully")
-#                     return redirect("index")
-#     else:
-#         form = LoginForm()
-#     return render(request, "login.html", {"form": form})
-#
-
-#
-# def register(request):
-#     """Render the register page."""
-#     if request.method == "POST":
-#         form = RegistrationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, "Account created successfully")
-#             return redirect("index")
-#     else:
-#         form = RegistrationForm()
-#     return render(request, 'register.html', {"form": form})
-
-

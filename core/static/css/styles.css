@@ -1,9 +1,12 @@
 :root {
   --primary-color: #6A9E39;
   --font-base: 1rem;
-  --h1-fluid: clamp(2rem, 5vw, 4rem);
-  --h2-fluid: clamp(1.75rem, 4vw, 3rem);
-  --p-fluid: clamp(1rem, 2vw, 1.2rem);
+  --h1-fluid: clamp(2.5rem, 6vw, 4.5rem);
+  --h2-fluid: clamp(2rem, 5vw, 3.5rem);
+  --h3-fluid: clamp(1.5rem, 4vw, 2.5rem);
+  --h4-fluid: clamp(1.25rem, 3.5vw, 2rem);
+  --p-fluid: clamp(1rem, 2vw, 1.25rem);
+  --small-fluid: clamp(0.8rem, 1.5vw, 1rem);
 }
 
 html {
@@ -21,6 +24,10 @@ body {
   overflow-x: hidden;
 }
 
+div, img, input, button, .card {
+  border-radius: 8px;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 0.5rem;
@@ -33,7 +40,7 @@ h2 { font-size: var(--h2-fluid); }
 p { font-size: var(--p-fluid); }
 
 .navbar-brand {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .wild-text {
@@ -50,7 +57,6 @@ p { font-size: var(--p-fluid); }
   top: 0;
   left: 0;
   right: 0;
-  /*width: 100%;*/
   background-color: #2b3035;
   text-align: center;
   font-size: 2rem;
@@ -68,6 +74,12 @@ p { font-size: var(--p-fluid); }
   background-color: var(--primary-color);
   border-color: var(--primary-color);
   font-weight: bold;
+}
+
+.btn-outline-success {
+  border-color: var(--primary-color);
+  font-weight: bold;
+  color: var(--primary-color);
 }
 
 .hamburger-divider {
@@ -118,17 +130,8 @@ p { font-size: var(--p-fluid); }
   }
 }
 
-.welcome-p {
-  font-weight: bold;
-  font-size: clamp(0.9rem, 2vw, 1.5rem);
-}
-
-.main-p {
-  font-size: clamp(0.7rem, 1.5vw, 1.2rem);
-}
-
 .text-overlay {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     font-weight: bold;
 }
@@ -164,17 +167,11 @@ p { font-size: var(--p-fluid); }
   color: var(--text-dark);
 }
 
-.bike-card img {
-  width: 100%;
-  height: 200px;
-}
-
 .bike-card-content h2,
 .bike-card-content h3 {
   margin: 0;
   color: var(--primary-color);
 }
-
 
 .bike-card-content a {
   display: flex;
@@ -198,7 +195,12 @@ p { font-size: var(--p-fluid); }
   padding: 15px 0 ;
 }
 
-.bike-img {
+.bike-card img {
+  width: 100%;
+  height: 200px;
+}
+
+.bike-img img{
   border-radius: 20px;
   width: 100%;
   height: clamp(200px, 70vw, 600px);
@@ -230,7 +232,6 @@ p { font-size: var(--p-fluid); }
   color: var(--primary-color);
   caption-side: top;
   text-align: center;
-
 }
 
 .styled-table tr,
@@ -262,6 +263,9 @@ hr {
     background: #2b3035 !important;
     border: 1px solid #495057 !important;
     box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
+    width: 100% !important;
+    max-width: 310px;
+    font-size: 14px;
 }
 
 .flatpickr-months {
@@ -362,14 +366,27 @@ span.flatpickr-weekday {
     background-color: #3f1f1f !important;
     color: #f87171 !important;
     border: 1px solid #dc2626 !important;
-    cursor: not-allowed !important;
+    cursor: pointer !important;
     position: relative !important;
+}
+
+.flatpickr-day.reserved-day:hover,
+.flatpickr-day.past-day:hover {
+    background-color: #3f1f1f !important;
+    color: #f87171 !important;
+    border-color: #dc2626 !important;
 }
 
 .flatpickr-day.today:not(.selected) {
     background-color: #1e293b !important;
     border: 2px solid #3b82f6 !important;
     color: #93bbfc !important;
+}
+
+.flatpickr-day.today.available-day {
+    background-color: #1a3a2e !important;
+    color: #4ade80 !important;
+    border: 2px solid #22c55e !important;
 }
 
 .flatpickr-day.selected,
@@ -441,6 +458,53 @@ span.flatpickr-weekday {
     border-color: #0d6efd !important;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
+
+/*Mobile calendar responsive styles*/
+@media (max-width: 768px) {
+    .flatpickr-calendar {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 9999 !important;
+        width: 95vw !important;
+        max-width: 310px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    }
+
+    .flatpickr-calendar.open {
+        display: block !important;
+    }
+
+    /* Larger touch targets for mobile */
+    .flatpickr-day {
+        height: 40px !important;
+        line-height: 40px !important;
+        font-size: 14px !important;
+    }
+
+    /* Time picker adjustments */
+    .flatpickr-time input {
+        font-size: 16px !important;
+        height: 40px !important;
+    }
+
+    .flatpickr-time .flatpickr-time-separator {
+        font-size: 16px !important;
+    }
+
+    /* Mobile overlay */
+    .flatpickr-calendar::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+    }
+}
 /*End of calendar style*/
 
 .price-panel {
@@ -458,4 +522,37 @@ span.flatpickr-weekday {
 
 .price-panel .text-muted {
     color: #adb5bd !important;
+}
+
+.reservation-card {
+    border-radius: 8px;
+}
+
+.reservation-card i {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+
+}
+.reservation-card h4 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.reservation-card img {
+  border-radius: 8px;
+}
+
+.status-confirmed {
+  color: var(--primary-color);
+}
+
+.status-pending {
+  color: #dc3545;
+}
+
+.no-arrow {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
 }

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from core.models import BikeModel, BikeInstance, Reservation
-from .forms import BookingForm
+from .forms import BookingForm, EditBookingForm
 from django.http import JsonResponse
 
 
@@ -69,9 +69,8 @@ def calculate_price_ajax(request, bike_model_id):
         days = int(request.GET.get('days', 1))
         bike_model = BikeModel.objects.get(id=bike_model_id)
         price_per_day_after_discount = bike_model.calculate_rental_price(days)
-        print(f"Per day: {price_per_day_after_discount}")
         total_price = price_per_day_after_discount * days
-        print(f"Total: {total_price}")
+
 
         return JsonResponse({
             'total_price': float(total_price),
@@ -86,12 +85,12 @@ def get_bike_reservations(request, bike_instance_id):
     """API endpoint to get reservations for a specific bike instance."""
     try:
         bike_instance = BikeInstance.objects.get(id=bike_instance_id)
-        reservations = Reservation.objects.filter(bike_instance=bike_instance).values("start_time", "end_time")
+        all_reservations = Reservation.objects.filter(bike_instance=bike_instance).values("start_time", "end_time")
         reservation_list = [
             {
                 "start_time": res["start_time"].isoformat(),
                 "end_time": res["end_time"].isoformat()
-            } for res in reservations
+            } for res in all_reservations
         ]
         return JsonResponse({"reservations": reservation_list})
     except BikeInstance.DoesNotExist:
@@ -101,11 +100,44 @@ def reservations(request):
     """Render the reservations page."""
     if request.user.is_authenticated:
         user_reservations = Reservation.objects.filter(user=request.user).order_by("-created_at")
-        return render(request, "reservations.html", {
-            "reservations": user_reservations,
-        })
+
     return render(request, "reservations.html", {
+        "reservations": user_reservations
     })
+
+def reservation_delete(request):
+    """Render the reservations page."""
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            reservation_id = request.POST.get("reservation_id")
+            reservation = get_object_or_404(Reservation, id=reservation_id)
+            reservation.delete()
+            messages.success(request, "Reservation cancelled successfully.")
+            return redirect("reservations")
+
+def reservation_edit(request, reservation_id):
+    """Edit an existing reservation."""
+    reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
+    if request.method == "POST":
+        booking_form = EditBookingForm(request.POST, instance=reservation)
+        print(booking_form)
+        if booking_form.is_valid():
+            updated_reservation = booking_form.save(commit=False)
+            updated_reservation.start_time = booking_form.cleaned_data["start_time"]
+            updated_reservation.end_time = booking_form.cleaned_data["end_time"]
+            updated_reservation.save()
+            messages.success(request, "Your reservation has been updated successfully!")
+            return redirect("reservations")
+        else:
+            messages.error(request, "Something went wrong. Please check the form for errors.")
+    else:
+        booking_form = EditBookingForm(instance=reservation)
+
+    return render(request, "reservation-edit.html", {
+        "form": booking_form,
+        "bike_model": reservation.bike_instance.bike_model,
+    })
+
 
 def routes(request):
     """Render the routes page."""

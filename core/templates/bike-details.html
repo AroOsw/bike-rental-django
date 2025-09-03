@@ -6,26 +6,27 @@
 <div class="my-6 d-flex justify-content-center align-items-center">
   <div class="col-11 col-lg-10 col-xl-9 col-xxl-8 bg-dark">
     <div class="m-xl-4 m-m-3 m-sm-2 m-1">
-      {% if bike_model.main_instance.img_slider.url %}
-        <img class=bike-img
-             src="{{ bike_model.main_instance.img_slider.url }}"
-             alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
-             loading="lazy">
-      {% else %}
-        <img class=bike-img
-             src="{% static 'images/placeholder.webp' %}"
-             alt="Placeholder image"
-             loading="lazy">
-      {% endif %}
+      <div class="bike-img">
+        {% if bike_model.main_instance.img_slider.url %}
+            <img src="{{ bike_model.main_instance.img_slider.url }}"
+                 alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
+                 loading="lazy">
+          {% else %}
+            <img src="{% static 'images/placeholder.webp' %}"
+                 alt="Placeholder image"
+                 loading="lazy">
+
+        {% endif %}
+      </div>
     </div>
     <div class="m-xl-5 m-m-4 m-sm-3 m-2">
       <div class="mx-3 text-center">
         <h2 class="bike-details-title text-center">{{ bike_model.brand }} - {{ bike_model.model }}</h2>
         <p>{{ bike_model.model_description }}</p>
       <hr>
-        <div class="size-and-booking d-flex justify-content-center">
-          <h3 class="bike-details-title">Available sizes: {{ bike_model.available_sizes|join:", " }}</h3>
-          <a href="#booking-form" class="btn btn-success mx-5">Book now</a>
+        <div class="justify-content-center">
+          <h3 class="bike-details-title mb-3">Available sizes: {{ bike_model.available_sizes|join:", " }}</h3>
+          <a href="#booking-form" class="btn btn-success ms-3">Book now</a>
         </div>
       <hr>
         <div class="specification">
@@ -79,6 +80,7 @@
         </div>
       <hr>
         <div id="booking-form" class="reservation-section">
+          {% if user.is_authenticated %}
           <h3 class="bike-details-title text-center">Book your bike</h3>
           <div class="d-flex justify-content-center">
             <div class="col-12 col-md-10">
@@ -105,7 +107,10 @@
               </div>
             </div>
           </div>
-        </div>
+        {% else %}
+          <h3 class="bike-details-title text-center">Please <a href="{% url 'account_login' %}">log in</a> to book a bike.</h3>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
@@ -113,142 +118,199 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const bikeSelect = document.getElementById('id_bike_instance');
-        const startTimeInput = document.getElementById('id_start_time');
-        const endTimeInput = document.getElementById('id_end_time');
+document.addEventListener('DOMContentLoaded', function() {
+    const bikeSelect = document.getElementById('id_bike_instance');
+    const startTimeInput = document.getElementById('id_start_time');
+    const endTimeInput = document.getElementById('id_end_time');
 
-        let fpStartTime = null;
-        let fpEndTime = null;
+    let fpStartTime = null;
+    let fpEndTime = null;
+    let reservationRanges = [];
 
-        function updatePriceDisplay() {
-            const startDate = startTimeInput.value;
-            const endDate = endTimeInput.value;
+    function updatePriceDisplay() {
+        const startDate = startTimeInput.value;
+        const endDate = endTimeInput.value;
 
-            if (!startDate || !endDate) {
-                document.getElementById('price-calculator').style.display = 'none';
-                return;
-            }
-
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-
-            const startDay = new Date(start);
-            startDay.setHours(0, 0, 0, 0);
-
-            const endDay = new Date(end);
-            endDay.setHours(23, 59, 59, 999);
-
-            let numDays = Math.ceil((endDay - startDay) / (1000 * 60 * 60 * 24));
-            if (numDays < 1) numDays = 1;
-
-            const url = `{% url 'calculate_price_ajax' bike_model.id %}?days=${numDays}`;
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.error) {
-                        document.getElementById('price-calculator').style.display = 'block';
-                        document.getElementById('rental-days').textContent = numDays;
-
-                        document.getElementById('price-per-day').textContent = data.price_per_day.toFixed(0);
-                        document.getElementById('total-price').textContent = data.total_price.toFixed(0);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+        if (!startDate || !endDate) {
+            document.getElementById('price-calculator').style.display = 'none';
+            return;
         }
 
-        function initializeFlatpickr(reservations) {
-            const reservationRanges = reservations.map(res => ({
-                from: new Date(res.start_time),
-                to: new Date(res.end_time)
-            }));
+        const start = new Date(startDate);
+        const end = new Date(endDate);
 
-            if (fpStartTime) fpStartTime.destroy();
-            if (fpEndTime) fpEndTime.destroy();
+        const startDay = new Date(start);
+        startDay.setHours(0, 0, 0, 0);
 
-            const flatpickrConfig = {
-                enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: "today",
-                time_24hr: true,
-                minTime: "08:00",
-                maxTime: "18:00",
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const day = dayElem.dateObj;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
+        const endDay = new Date(end);
+        endDay.setHours(23, 59, 59, 999);
 
-                    dayElem.classList.remove('available-day', 'reserved-day', 'past-day');
+        let numDays = Math.ceil((endDay - startDay) / (1000 * 60 * 60 * 24));
+        if (numDays < 1) numDays = 1;
 
-                    if (day < today) {
-                        dayElem.classList.add('past-day');
-                        return;
-                    }
+        const url = `{% url 'calculate_price_ajax' bike_model.id %}?days=${numDays}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    document.getElementById('price-calculator').style.display = 'block';
+                    document.getElementById('rental-days').textContent = numDays;
+                    document.getElementById('price-per-day').textContent = data.price_per_day.toFixed(0);
+                    document.getElementById('total-price').textContent = data.total_price.toFixed(0);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-                    let isReserved = false;
-                    for (const res of reservationRanges) {
-                        const resFrom = new Date(res.from);
-                        const resTo = new Date(res.to);
-                        resFrom.setHours(0, 0, 0, 0);
-                        resTo.setHours(23, 59, 59, 999);
+    function isDateReserved(date) {
+        const checkDate = new Date(date);
+        checkDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
 
-                        if (day >= resFrom && day <= resTo) {
-                            dayElem.classList.add('reserved-day');
-                            isReserved = true;
-                            break;
-                        }
-                    }
+        for (const res of reservationRanges) {
+            const resFrom = new Date(res.from);
+            const resTo = new Date(res.to);
+            resFrom.setHours(0, 0, 0, 0);
+            resTo.setHours(23, 59, 59, 999);
 
-                    if (!isReserved) {
-                        dayElem.classList.add('available-day');
+            if (checkDate >= resFrom && checkDate <= resTo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    {#function validateDateSelection() {#}
+    {#    const startDate = startTimeInput.value;#}
+    {#    const endDate = endTimeInput.value;#}
+    {##}
+    {#    if (startDate && isDateReserved(new Date(startDate))) {#}
+    {#        alert('Selected start date is not available. Please choose another date.');#}
+    {#        startTimeInput.value = '';#}
+    {#        return false;#}
+    {#    }#}
+    {##}
+    {#    if (endDate && isDateReserved(new Date(endDate))) {#}
+    {#        alert('Selected end date is not available. Please choose another date.');#}
+    {#        endTimeInput.value = '';#}
+    {#        return false;#}
+    {#    }#}
+    {##}
+    {#    // Check if any date in the range is reserved#}
+    {#    if (startDate && endDate) {#}
+    {#        const start = new Date(startDate);#}
+    {#        const end = new Date(endDate);#}
+    {##}
+    {#        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {#}
+    {#            if (isDateReserved(d)) {#}
+    {#                alert('Some dates in your selected range are not available. Please choose different dates.');#}
+    {#                startTimeInput.value = '';#}
+    {#                endTimeInput.value = '';#}
+    {#                return false;#}
+    {#            }#}
+    {#        }#}
+    {#    }#}
+    {##}
+    {#    return true;#}
+
+
+    function initializeFlatpickr(reservations) {
+        reservationRanges = reservations.map(res => ({
+            from: new Date(res.start_time),
+            to: new Date(res.end_time)
+        }));
+
+        if (fpStartTime) fpStartTime.destroy();
+        if (fpEndTime) fpEndTime.destroy();
+
+        const flatpickrConfig = {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+            time_24hr: true,
+            minTime: "08:00",
+            maxTime: "18:00",
+            // Force desktop mode on mobile to maintain custom styling
+            disableMobile: true,
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const day = dayElem.dateObj;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                dayElem.classList.remove('available-day', 'reserved-day', 'past-day');
+
+                if (day < today) {
+                    dayElem.classList.add('past-day');
+                    return;
+                }
+
+                let isReserved = false;
+                for (const res of reservationRanges) {
+                    const resFrom = new Date(res.from);
+                    const resTo = new Date(res.to);
+                    resFrom.setHours(0, 0, 0, 0);
+                    resTo.setHours(23, 59, 59, 999);
+
+                    if (day >= resFrom && day <= resTo) {
+                        dayElem.classList.add('reserved-day');
+                        isReserved = true;
+                        break;
                     }
                 }
-            };
 
-            fpStartTime = flatpickr(startTimeInput, {
-                ...flatpickrConfig,
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (selectedDates.length > 0) {
+                if (!isReserved) {
+                    dayElem.classList.add('available-day');
+                }
+            }
+        };
+
+        fpStartTime = flatpickr(startTimeInput, {
+            ...flatpickrConfig,
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length > 0) {
+                    if (validateDateSelection()) {
                         fpEndTime.set('minDate', selectedDates[0]);
                         updatePriceDisplay();
                     }
                 }
-            });
-
-            fpEndTime = flatpickr(endTimeInput, {
-                ...flatpickrConfig,
-                onChange: function(selectedDates, dateStr, instance) {
-                    updatePriceDisplay();
-                }
-            });
-        }
-
-        function fetchReservations(bikeInstanceId) {
-            if (!bikeInstanceId) {
-                initializeFlatpickr([]);
-                return;
             }
-            const url = `{% url 'get_bike_reservations' 0 %}`.replace('0', bikeInstanceId);
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.reservations) {
-                        initializeFlatpickr(data.reservations);
-                    }
-                })
-                .catch(error => console.error('Error fetching reservations:', error));
-        }
-
-        bikeSelect.addEventListener('change', (event) => {
-            fetchReservations(event.target.value);
-            document.getElementById('price-calculator').style.display = 'none';
         });
 
-        if (bikeSelect.value) {
-            fetchReservations(bikeSelect.value);
-        } else {
+        fpEndTime = flatpickr(endTimeInput, {
+            ...flatpickrConfig,
+            onChange: function(selectedDates, dateStr, instance) {
+                if (validateDateSelection()) {
+                    updatePriceDisplay();
+                }
+            }
+        });
+    }
+
+    function fetchReservations(bikeInstanceId) {
+        if (!bikeInstanceId) {
             initializeFlatpickr([]);
+            return;
         }
+        const url = `{% url 'get_bike_reservations' 0 %}`.replace('0', bikeInstanceId);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.reservations) {
+                    initializeFlatpickr(data.reservations);
+                }
+            })
+            .catch(error => console.error('Error fetching reservations:', error));
+    }
+
+    bikeSelect.addEventListener('change', (event) => {
+        fetchReservations(event.target.value);
+        document.getElementById('price-calculator').style.display = 'none';
     });
+
+    if (bikeSelect.value) {
+        fetchReservations(bikeSelect.value);
+    } else {
+        initializeFlatpickr([]);
+    }
+});
 </script>
 {% endblock %}

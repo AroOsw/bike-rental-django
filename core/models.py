@@ -120,7 +120,7 @@ class Reservation(models.Model):
 
     def __str__(self):
         bike_info = str(self.bike_instance) if self.bike_instance else "Bike unavailable"
-        return f"Reservation by {self.user.username} - {bike_info} from {self.start_time.strftime('%Y-%m-%d %H:%M')}"
+        return f"Reservation by {self.user.username} - {bike_info}"
 
     def calculate_total_cost(self):
         """Calculates the total cost of the reservation."""

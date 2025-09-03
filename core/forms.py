@@ -163,6 +163,7 @@ class RegistrationForm(SignupForm):
         )
 
 class BookingForm(forms.ModelForm):
+
     class Meta:
         model = Reservation
         fields = ['bike_instance', 'start_time', 'end_time', 'total_cost']
@@ -238,5 +239,74 @@ class BookingForm(forms.ModelForm):
                                                     bike_instance=selected_bike).exists()
             if is_reserved:
                 raise forms.ValidationError("This bike is not available for the selected dates.")
+
+        return cleaned_data
+
+class EditBookingForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ['bike_instance','start_time', 'end_time', 'total_cost']
+        widgets = {
+            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance = kwargs.get('instance')
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_show_errors = True
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = False
+
+        self.fields['bike_instance'].disabled = True
+        self.fields["bike_instance"].label = ""
+        self.fields['bike_instance'].widget.attrs['class'] = 'form-control no-arrow'
+
+        self.fields["start_time"].label = "Start Time"
+        self.fields["start_time"].widget.attrs.update({
+            "required": True,
+            "type": "datetime-local",
+            "placeholder": "Start Time",
+        })
+
+        self.fields["end_time"].label = "End Time"
+        self.fields["end_time"].widget.attrs.update({
+            "required": True,
+            "type": "datetime-local",
+            "placeholder": "End Time",
+        })
+        self.helper.layout = Layout(
+            'bike_instance',
+            Row(
+                Column('start_time', css_class=''),
+                Column('end_time', css_class=''),
+                css_class='row'
+            ),
+            Div(
+                Submit("submit", "Update Booking", css_class="btn btn-success"),
+                css_class="d-flex justify-content-center my-4")
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+
+        if start_time and end_time:
+            # Get the bike instance related to the current reservation
+            bike_instance = self.instance.bike_instance
+
+            # Look for conflicting reservations, EXCLUDING the current one being edited
+            conflicting_reservations = Reservation.objects.filter(
+                bike_instance=bike_instance,
+                start_time__lt=end_time,
+                end_time__gt=start_time
+            ).exclude(pk=self.instance.pk)  # This is the key part
+
+            if conflicting_reservations.exists():
+                raise forms.ValidationError(
+                    "These dates are already reserved for this bike. Please choose different dates.")
 
         return cleaned_data

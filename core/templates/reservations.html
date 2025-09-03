@@ -1,26 +1,84 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load reservation_tags %}
 
 {% block content %}
-<div class="my-6 d-flex justify-content-center align-items-center"  data-bs-theme="dark">
-  <div class="col-10 col-md-8 col-lg-6 col-xl-5">
-    <div class="card" style="border-radius: 1rem;">
-      <div class="card-body p-5 text-center">
-        <div class="mb-md-5 mt-md-4 pb-1">
-            {% if user.is_authenticated %}
-            <h2 class="fw-bold mb-2 text-uppercase"><span class="wild-text">Your</span> reservations</h2>
-            {% for reservation in reservations %}
-              {{ reservation }}
-            {% empty %}
-              <p>You don't have any reservations yet</p>
-            {% endfor %}
-            {% else %}
-              <p>Please log in to see your reservations</p>
-            {% endif %}
+<div class="col-xxl-11 col-12 mx-auto">
+  <section class="mx-auto bg-image flex justify-content-center"
+           style="background-image:url({% static 'webp_images/roadbikes.webp' %});">
+
+      <div class="text-overlay p-2">
+        <h2><span class="wild-text">Your</span> Reservations</h2>
+        <p class="bold">Here you can check details about your actual or past reservations</p>
+      </div>
+  </section>
+</div>
+<div class="container-fluid my-5 col-xxl-6 col-xl-8 col-md-10 col-sm-8 col-11 mx-auto">
+  {% if user.is_authenticated %}
+    {% for reservation in reservations %}
+      <div class="reservation-card card my-2 bg-dark">
+        <div class="row p-3">
+          <div class="col-12 col-md-5 mb-3 mb-md-0 d-flex justify-content-center">
+            <img class="img-fluid"
+                 src="{{ reservation.bike_instance.img_thumbnail.url }}"
+                 alt="{{ reservation.bike_instance.bike_model.brand }} - {{ reservation.bike_instance.bike_model.model }}">
+          </div>
+          <div class="col-12 col-md-7">
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-bicycle"></i>
+                <h4 class="mb-0">{{ reservation.bike_instance }}</h4>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-calendar-event"></i>
+                <p class="mb-0">{{ reservation.start_time|date:"j/n/y - H:i" }} - {{ reservation.end_time|date:"j/n/y - H:i" }}</p>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-clock"></i>
+                <p class="mb-0">Created: {{ reservation.created_at|date:"j/n/y - H:i" }}</p>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill"></i>
+                <p class="mb-0">Booking status: <span class="{{ reservation.is_confirmed|booking_status }}">
+                  {% if reservation.is_confirmed %}
+                      Confirmed
+                  {% else %}
+                      Pending
+                  {% endif %}
+              </span></p>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-cash"></i>
+                <p class="mb-0">Total cost: ฿{{ reservation.total_cost }}</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12 d-flex justify-content-center align-content-center gap-3">
+            <form action="{% url 'reservation_delete' %}" method="post">
+            {% csrf_token %}
+                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                <button type="submit" class="btn btn-outline-danger mt-3">Delete</button>
+            </form>
+
+              <a href="{% url 'reservation_edit' reservation.id %}" class="btn btn-outline-success mt-3">Edit</a>
+
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    {% empty %}
+      <p>You don't have any reservations yet</p>
+    {% endfor %}
+  {% else %}
+    <p>Please log in to see your reservations</p>
+  {% endif %}
 </div>
+
 {% endblock %}

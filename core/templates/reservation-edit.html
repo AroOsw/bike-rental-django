@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block content %}
+  <div class="my-6 d-flex justify-content-center align-items-center"  data-bs-theme="dark">
+    <div class="col-10 col-md-8 col-lg-6 col-xl-5">
+      <div class="card" style="border-radius: 1rem;">
+        <div class="card-body p-5 text-center">
+          <div id="booking-form" class="reservation-section">
+              {% if user.is_authenticated %}
+                <h3 class="bike-details-title text-center">Edit your reservation for</h3>
+                <hr>
+                <p>{{ reservation.bike_instance }}</p>
+                  <div class="d-flex justify-content-center">
+                    <div class="col-12 col-md-10">
+                      {% crispy form %}
+                      <p>The calendar shows all reserved dates in red. Please note that you can still choose from the red dates if they are part of your current reservation.</p>
+                        <div id="price-calculator" class="price-panel mb-4" style="display: none;">
+                          <h4 class="bike-details-title mb-3 text-center">
+                            <i class="bi bi-calculator"></i> Rental Cost
+                          </h4>
+                          <hr>
+                          <div class="row text-center">
+                            <div class="col-4">
+                              <small class="text-muted">Days</small>
+                              <p class="h5 mb-0"><span id="rental-days">0</span></p>
+                            </div>
+                            <div class="col-4">
+                              <small class="text-muted">Price per Day</small>
+                              <p class="h5 mb-0">฿<span id="price-per-day">0</span></p>
+                            </div>
+                            <div class="col-4">
+                              <small class="text-muted">Total Price</small>
+                              <h4 class="mb-0">฿<span id="total-price">0</span></h4>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+              {% else %}
+                <h3 class="bike-details-title text-center">Please <a href="{% url 'account_login' %}">log in</a> to book a bike.</h3>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bikeSelect = document.getElementById('id_bike_instance');
+    const startTimeInput = document.getElementById('id_start_time');
+    const endTimeInput = document.getElementById('id_end_time');
+
+    let fpStartTime = null;
+    let fpEndTime = null;
+    let reservationRanges = [];
+
+    function updatePriceDisplay() {
+        const startDate = startTimeInput.value;
+        const endDate = endTimeInput.value;
+
+        if (!startDate || !endDate) {
+            document.getElementById('price-calculator').style.display = 'none';
+            return;
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        const startDay = new Date(start);
+        startDay.setHours(0, 0, 0, 0);
+
+        const endDay = new Date(end);
+        endDay.setHours(23, 59, 59, 999);
+
+        let numDays = Math.ceil((endDay - startDay) / (1000 * 60 * 60 * 24));
+        if (numDays < 1) numDays = 1;
+
+        const url = `{% url 'calculate_price_ajax' bike_model.id %}?days=${numDays}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    document.getElementById('price-calculator').style.display = 'block';
+                    document.getElementById('rental-days').textContent = numDays;
+                    document.getElementById('price-per-day').textContent = data.price_per_day.toFixed(0);
+                    document.getElementById('total-price').textContent = data.total_price.toFixed(0);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function isDateReserved(date) {
+        const checkDate = new Date(date);
+        checkDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+
+        for (const res of reservationRanges) {
+            const resFrom = new Date(res.from);
+            const resTo = new Date(res.to);
+            resFrom.setHours(0, 0, 0, 0);
+            resTo.setHours(23, 59, 59, 999);
+
+            if (checkDate >= resFrom && checkDate <= resTo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function initializeFlatpickr(reservations) {
+        reservationRanges = reservations.map(res => ({
+            from: new Date(res.start_time),
+            to: new Date(res.end_time)
+        }));
+
+        if (fpStartTime) fpStartTime.destroy();
+        if (fpEndTime) fpEndTime.destroy();
+
+        const flatpickrConfig = {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+            time_24hr: true,
+            minTime: "08:00",
+            maxTime: "18:00",
+            // Force desktop mode on mobile to maintain custom styling
+            disableMobile: true,
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const day = dayElem.dateObj;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                dayElem.classList.remove('available-day', 'reserved-day', 'past-day');
+
+                if (day < today) {
+                    dayElem.classList.add('past-day');
+                    return;
+                }
+
+                let isReserved = false;
+                for (const res of reservationRanges) {
+                    const resFrom = new Date(res.from);
+                    const resTo = new Date(res.to);
+                    resFrom.setHours(0, 0, 0, 0);
+                    resTo.setHours(23, 59, 59, 999);
+
+                    if (day >= resFrom && day <= resTo) {
+                        dayElem.classList.add('reserved-day');
+                        isReserved = true;
+                        break;
+                    }
+                }
+
+
+
+                if (!isReserved) {
+                    dayElem.classList.add('available-day');
+                }
+            }
+        };
+
+        fpStartTime = flatpickr(startTimeInput, {
+            ...flatpickrConfig,
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length > 0) {
+                        fpEndTime.set('minDate', selectedDates[0]);
+                        updatePriceDisplay();
+
+                }
+            }
+        });
+
+        fpEndTime = flatpickr(endTimeInput, {
+            ...flatpickrConfig,
+            onChange: function(selectedDates, dateStr, instance) {
+                    updatePriceDisplay();
+
+            }
+        });
+    }
+
+    function fetchReservations(bikeInstanceId) {
+        if (!bikeInstanceId) {
+            initializeFlatpickr([]);
+            return;
+        }
+        const url = `{% url 'get_bike_reservations' 0 %}`.replace('0', bikeInstanceId);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.reservations) {
+                    initializeFlatpickr(data.reservations);
+                }
+            })
+            .catch(error => console.error('Error fetching reservations:', error));
+    }
+
+    bikeSelect.addEventListener('change', (event) => {
+        fetchReservations(event.target.value);
+        document.getElementById('price-calculator').style.display = 'none';
+    });
+
+    if (bikeSelect.value) {
+        fetchReservations(bikeSelect.value);
+    } else {
+        initializeFlatpickr([]);
+    }
+});
+</script>
+
+
+
+{% endblock %}

@@ -22,7 +22,6 @@ def bikes(request, slug):
 
         })
     bike_type = BikeModel.objects.filter(type=slug).all()
-    print(bike_type)
     return render(request, "bikes.html", {
         "all_bikes": bike_type,
     })
@@ -52,7 +51,6 @@ def bike_details(request, slug):
             return redirect("bike_details", slug=slug)
         else:
             messages.error(request, "Something went wrong. Please check the form for errors.")
-            # print(booking_form.errors.as_text())
     else:
         booking_form = BookingForm(bike_model=bike_model)
 
@@ -70,7 +68,6 @@ def calculate_price_ajax(request, bike_model_id):
         bike_model = BikeModel.objects.get(id=bike_model_id)
         price_per_day_after_discount = bike_model.calculate_rental_price(days)
         total_price = price_per_day_after_discount * days
-
 
         return JsonResponse({
             'total_price': float(total_price),
@@ -100,10 +97,10 @@ def reservations(request):
     """Render the reservations page."""
     if request.user.is_authenticated:
         user_reservations = Reservation.objects.filter(user=request.user).order_by("-created_at")
-
-    return render(request, "reservations.html", {
-        "reservations": user_reservations
-    })
+        return render(request, "reservations.html", {
+            "reservations": user_reservations
+        })
+    return render(request, "reservations.html", {})
 
 def reservation_delete(request):
     """Render the reservations page."""
@@ -114,30 +111,32 @@ def reservation_delete(request):
             reservation.delete()
             messages.success(request, "Reservation cancelled successfully.")
             return redirect("reservations")
+    return redirect("index")
 
 def reservation_edit(request, reservation_id):
     """Edit an existing reservation."""
-    reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
-    if request.method == "POST":
-        booking_form = EditBookingForm(request.POST, instance=reservation)
-        print(booking_form)
-        if booking_form.is_valid():
-            updated_reservation = booking_form.save(commit=False)
-            updated_reservation.start_time = booking_form.cleaned_data["start_time"]
-            updated_reservation.end_time = booking_form.cleaned_data["end_time"]
-            updated_reservation.save()
-            messages.success(request, "Your reservation has been updated successfully!")
-            return redirect("reservations")
+    if request.user.is_authenticated:
+        reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
+        if request.method == "POST":
+            booking_form = EditBookingForm(request.POST, instance=reservation)
+            print(booking_form)
+            if booking_form.is_valid():
+                updated_reservation = booking_form.save(commit=False)
+                updated_reservation.start_time = booking_form.cleaned_data["start_time"]
+                updated_reservation.end_time = booking_form.cleaned_data["end_time"]
+                updated_reservation.save()
+                messages.success(request, "Your reservation has been updated successfully!")
+                return redirect("reservations")
+            else:
+                messages.error(request, "Something went wrong. Please check the form for errors.")
         else:
-            messages.error(request, "Something went wrong. Please check the form for errors.")
-    else:
-        booking_form = EditBookingForm(instance=reservation)
+            booking_form = EditBookingForm(instance=reservation)
 
-    return render(request, "reservation-edit.html", {
-        "form": booking_form,
-        "bike_model": reservation.bike_instance.bike_model,
-    })
-
+        return render(request, "reservation-edit.html", {
+            "form": booking_form,
+            "bike_model": reservation.bike_instance.bike_model,
+        })
+    return redirect("index")
 
 def routes(request):
     """Render the routes page."""

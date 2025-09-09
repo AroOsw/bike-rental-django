@@ -3,12 +3,14 @@ from django import forms
 from django.contrib.auth.models import User
 from allauth.account.forms import LoginForm as AllauthLoginForm, SignupForm, ResetPasswordForm
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Field, Row, Column
+from crispy_forms.layout import Submit, Layout, Div, Field, Row, Column, HTML, Button
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils import timezone
-from .models import Reservation, BikeInstance
+from .models import Reservation, BikeInstance, Profile
 from django.db.models import Q
+from django.db import transaction
+
 
 
 class CrispyResetPasswordForm(ResetPasswordForm):
@@ -35,6 +37,7 @@ class CrispyResetPasswordForm(ResetPasswordForm):
                 Submit("submit", "Reset password", css_class="btn btn-success"),
                 css_class="d-flex justify-content-center my-4")
         )
+
 
 class LoginForm(AllauthLoginForm):
     def __init__(self, *args, **kwargs):
@@ -73,7 +76,7 @@ class LoginForm(AllauthLoginForm):
 
 class RegistrationForm(SignupForm):
     terms_of_service = forms.BooleanField(
-        label= mark_safe("I agree to the <a href='/terms/' class='terms-text fw-bold text-body'>Terms of Service</a>"),
+        label=mark_safe("I agree to the <a href='/terms/' class='terms-text fw-bold text-body'>Terms of Service</a>"),
     )
 
     class Meta:
@@ -162,8 +165,8 @@ class RegistrationForm(SignupForm):
                 css_class="d-flex justify-content-center my-4")
         )
 
-class BookingForm(forms.ModelForm):
 
+class BookingForm(forms.ModelForm):
     class Meta:
         model = Reservation
         fields = ['bike_instance', 'start_time', 'end_time', 'total_cost']
@@ -171,7 +174,6 @@ class BookingForm(forms.ModelForm):
             'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
-
 
     def __init__(self, *args, **kwargs):
         bike_model = kwargs.pop('bike_model', None)
@@ -186,7 +188,6 @@ class BookingForm(forms.ModelForm):
             self.fields['bike_instance'].queryset = BikeInstance.objects.filter(bike_model=bike_model)
         else:
             self.fields['bike_instance'].queryset = BikeInstance.objects.filter(status='available')
-
 
         self.fields["bike_instance"].label = "Select Size"
         self.fields["bike_instance"].widget.attrs.update({
@@ -236,16 +237,17 @@ class BookingForm(forms.ModelForm):
 
         if start_time and end_time and selected_bike:
             is_reserved = Reservation.objects.filter(Q(start_time__lte=end_time) & Q(end_time__gte=start_time),
-                                                    bike_instance=selected_bike).exists()
+                                                     bike_instance=selected_bike).exists()
             if is_reserved:
                 raise forms.ValidationError("This bike is not available for the selected dates.")
 
         return cleaned_data
 
+
 class EditBookingForm(forms.ModelForm):
     class Meta:
         model = Reservation
-        fields = ['bike_instance','start_time', 'end_time', 'total_cost']
+        fields = ['bike_instance', 'start_time', 'end_time', 'total_cost']
         widgets = {
             'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
@@ -295,18 +297,131 @@ class EditBookingForm(forms.ModelForm):
         end_time = cleaned_data.get('end_time')
 
         if start_time and end_time:
-            # Get the bike instance related to the current reservation
             bike_instance = self.instance.bike_instance
 
-            # Look for conflicting reservations, EXCLUDING the current one being edited
             conflicting_reservations = Reservation.objects.filter(
                 bike_instance=bike_instance,
                 start_time__lt=end_time,
                 end_time__gt=start_time
-            ).exclude(pk=self.instance.pk)  # This is the key part
+            ).exclude(pk=self.instance.pk)
 
             if conflicting_reservations.exists():
                 raise forms.ValidationError(
                     "These dates are already reserved for this bike. Please choose different dates.")
 
         return cleaned_data
+
+#
+# class CustomClearableFileInput(ClearableFileInput):
+#     initial_text = None
+#     input_text = None
+#     clear_checkbox_label = None
+
+
+class ProfileForm(forms.ModelForm):
+    username = forms.CharField(max_length=100, required=True)
+    first_name = forms.CharField(max_length=100, required=True)
+    last_name = forms.CharField(max_length=100, required=True)
+    email = forms.CharField(max_length=100, required=True)
+
+    class Meta:
+        model = Profile
+        fields = fields = ["phone_number", "profile_picture", "birth_date", "city", "street_address", "zip_code",
+                           "country"]
+
+        widgets = {
+            "birth_date": forms.DateInput(attrs={"type": "date"}),
+            # "profile_picture": CustomClearableFileInput(attrs={"class": "form-control"})
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "profile_form"
+        self.helper.form_show_errors = True
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = False
+        self.fields["profile_picture"].label = False
+        self.fields["profile_picture"].help_text = ""
+
+        if self.user:
+            self.fields['username'].initial = self.user.username
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['email'].initial = self.user.email
+
+        self.helper.layout = Layout(
+        Div(
+            Row(
+            Column(
+                    HTML(
+                        '''
+                        <div id="photo-display-container">
+                            <div class="d-flex flex-column align-items-center ">
+                                {% load static %}
+                                {% if form.instance.profile_picture %}
+                                    <img id="profile-pic" src="{{ form.instance.profile_picture.url }}" class="img-fluid profile-picture mb-3" alt="Profile Picture">
+                                {% else %}
+                                    <img id="profile-pic" src="{% static 'media/profile_pics/default_profile.webp' %}" class="img-fluid profile-picture mb-3" alt="Default Profile Picture">
+                                {% endif %}   
+                                <button type="button" id="change-photo-btn" class="btn btn-success ">Change Photo</button>                                                          
+                            </div>
+                        </div>
+                        '''
+                    ),
+                    Div(
+                        Field('profile_picture'),
+                        css_id="file-input-section",
+                        style="display: none;"
+                    ),
+                    css_class='col-12 col-md-6 d-flex flex-column justify-content-center align-items-center'
+                        ),
+                    Column(
+                            'username',
+                            'first_name',
+                            'last_name',
+                            'email',
+                            css_class='col-12 col-md-6'
+                        ),
+                        css_class="d-flex justify-content-center"
+                    ),
+                    css_class="profile-header-section"
+                ),
+                Div(
+                HTML("<hr>"),
+                    Row(
+                    Column('phone_number', css_class='col-12 col-md-6'),
+                        Column('birth_date', css_class='col-12 col-md-6'),
+                        css_class='d-flex justify-content-start'),
+                    Row(
+                    Column('country', css_class='col-12 col-md-6'),
+                        Column('city', css_class='col-12 col-md-6'),
+                        css_class='d-flex justify-content-start'),
+                    Row(
+                    Column('street_address', css_class='col-12 col-md-6'),
+                        Column('zip_code', css_class='col-12 col-md-6'),
+                        css_class='d-flex justify-content-start'),
+                        css_class="profile-form"),
+                    Div(
+                HTML("""
+                          <a href="{% url 'account_set_password' %}" class="btn btn-success">Change Password</a>
+                        """),
+                Submit("submit", "Update Data", css_class="btn btn-success"),
+                css_class="d-flex justify-content-center gap-4 my-4"),
+        )
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        profile = super().save(commit=False)
+        profile.save()
+
+        if self.user:
+            self.user.username = self.cleaned_data['username']
+            self.user.first_name = self.cleaned_data['first_name']
+            self.user.last_name = self.cleaned_data['last_name']
+            self.user.email = self.cleaned_data['email']
+            self.user.save()
+
+        return profile

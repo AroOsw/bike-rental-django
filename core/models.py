@@ -151,3 +151,17 @@ class ChatMessage(models.Model):
         return f"Message from {self.user.username} at {self.timestamp}"
 
 
+class Profile(models.Model):
+    """Model representing a User profile"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=20, blank=True)
+    profile_picture = models.ImageField(upload_to="profile_pics/", default="profile_pics/default_profile.webp")
+    birth_date = models.DateField(null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    street_address = models.CharField(max_length=255, null=True, blank=True)
+    zip_code = models.CharField(max_length=20, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username

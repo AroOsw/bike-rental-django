@@ -1,7 +1,7 @@
 import datetime
 from django import forms
 from django.contrib.auth.models import User
-from allauth.account.forms import LoginForm as AllauthLoginForm, SignupForm, ResetPasswordForm
+from allauth.account.forms import LoginForm as AllauthLoginForm, SignupForm, ResetPasswordForm, ChangePasswordForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Field, Row, Column, HTML, Button
 from django.urls import reverse
@@ -37,6 +37,53 @@ class CrispyResetPasswordForm(ResetPasswordForm):
                 Submit("submit", "Reset password", css_class="btn btn-success"),
                 css_class="d-flex justify-content-center my-4")
         )
+
+class CrispyChangePasswordForm(ChangePasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_action = reverse("account_set_password")
+        self.helper.form_show_errors = True
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = False
+        self.fields["oldpassword"].label = ""
+        self.fields["oldpassword"].widget.attrs.update({
+            "required": True,
+            "id": "id_oldpassword",
+            "type": "password",
+            "class": "input-form",
+            "placeholder": "Current Password",
+            "autocomplete": "current-password",
+        })
+        self.fields["password1"].label = ""
+        self.fields["password1"].widget.attrs.update({
+            "required": True,
+            "id": "id_password1",
+            "type": "password",
+            "class": "input-form",
+            "placeholder": "New Password",
+            "autocomplete": "new-password",
+        })
+        self.fields["password2"].label = ""
+        self.fields["password2"].widget.attrs.update({
+            "required": True,
+            "id": "id_password2",
+            "type": "password",
+            "class": "input-form",
+            "placeholder": "New Password (again)",
+            "autocomplete": "new-password",
+        })
+        self.helper.layout = Layout(
+            'oldpassword',
+                    'password1',
+                    'password2',
+            Div(
+                Submit("submit", "Change password", css_class="btn btn-success"),
+                css_class="d-flex justify-content-center my-4")
+        )
+
+
 
 
 class LoginForm(AllauthLoginForm):
@@ -311,12 +358,6 @@ class EditBookingForm(forms.ModelForm):
 
         return cleaned_data
 
-#
-# class CustomClearableFileInput(ClearableFileInput):
-#     initial_text = None
-#     input_text = None
-#     clear_checkbox_label = None
-
 
 class ProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=100, required=True)
@@ -331,7 +372,6 @@ class ProfileForm(forms.ModelForm):
 
         widgets = {
             "birth_date": forms.DateInput(attrs={"type": "date"}),
-            # "profile_picture": CustomClearableFileInput(attrs={"class": "form-control"})
         }
 
     def __init__(self, *args, **kwargs):

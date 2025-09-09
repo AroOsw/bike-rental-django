@@ -99,6 +99,7 @@ ACCOUNT_FORMS = {
     'login': 'core.forms.LoginForm',
     'signup': 'core.forms.RegistrationForm',
     'reset_password': 'core.forms.CrispyResetPasswordForm',
+    'change_password': 'core.forms.CrispyChangePasswordForm',
 }
 
 WSGI_APPLICATION = 'WildWheel.wsgi.application'

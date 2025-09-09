@@ -22,9 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (changeBtn && fileInputSection) {
         changeBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevents the button from submitting the form
+            e.preventDefault();
 
-            // Toggle visibility of the two sections
             if (photoDisplayContainer.style.display !== 'none') {
                 photoDisplayContainer.style.display = 'none';
                 fileInputSection.style.display = 'block';

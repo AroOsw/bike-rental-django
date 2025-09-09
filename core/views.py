@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
-from core.models import BikeModel, BikeInstance, Reservation
-from .forms import BookingForm, EditBookingForm
+from core.models import BikeModel, BikeInstance, Reservation, Profile
+from .forms import BookingForm, EditBookingForm, ProfileForm
 from django.http import JsonResponse
 
 
@@ -153,12 +153,19 @@ def terms(request):
 @login_required
 def profile(request):
     """Render the user profile page."""
-    if request.user.is_authenticated:
-        user = request.user
-        return render(request, "profile.html", {"user": user})
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        profile_form = ProfileForm(request.POST, request.FILES, instance=user_profile, user=request.user)
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Your data has been updated successfully")
+            return redirect("profile")
+        else:
+            messages.error(request, "Error")
     else:
-        messages.error(request, "You need to be logged in to view your profile.")
-        return redirect("index")
+        profile_form = ProfileForm(instance=request.user.profile, user=request.user)
+    return render(request, "profile.html", {"form": profile_form})
 
 def logout_view(request):
     """Log out the user and redirect to the index page."""

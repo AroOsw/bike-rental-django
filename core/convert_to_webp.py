@@ -4,7 +4,7 @@ import os
 
 save_path = r"E:\BikeRental\bike-rental-django\core\static\webp_images"
 # directory_path = r"E:\BikeRental\bike-rental-django\core\static\images"
-photo_path = r"E:\BikeRental\bike-rental-django\core\static\images\roadbikes.jpg"
+photo_path = r"E:\BikeRental\bike-rental-django\core\static\images\Wild_Wheel_rental_logo_bk.png"
 #
 #
 # if os.path.exists(directory_path):

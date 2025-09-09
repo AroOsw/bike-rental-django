@@ -1,16 +1,39 @@
 {% extends 'base.html' %}
+{% load static  %}
+{% load crispy_forms_tags %}
 
 {% block content %}
   <div class="my-6 d-flex justify-content-center align-items-center"  data-bs-theme="dark">
-    <div class="col-10 col-md-8 col-lg-6 col-xl-5">
-      <div class="card" style="border-radius: 1rem;">
-        <div class="card-body p-5 text-center">
-          <h2>User Profile</h2>
-          <p class="text-white-50 mb-5">Welcome, {{ user.username }}!</p>
-
-        </div>
-      </div>
+    <div class="container text-center col-10 col-lg-7 col-xl-6">
+      <h2>Profile</h2>
+        <p class="text-white-50 mb-5">View all you profile details here.</p>
+          <div class="card p-4 text-start">
+            <div class="col-12">
+              {% crispy form %}
+            </div>
+          </div>
     </div>
   </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const changeBtn = document.getElementById('change-photo-btn');
+    const photoDisplayContainer = document.getElementById('photo-display-container');
+    const fileInputSection = document.getElementById('file-input-section');
 
+    if (changeBtn && fileInputSection) {
+        changeBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevents the button from submitting the form
+
+            // Toggle visibility of the two sections
+            if (photoDisplayContainer.style.display !== 'none') {
+                photoDisplayContainer.style.display = 'none';
+                fileInputSection.style.display = 'block';
+            } else {
+                photoDisplayContainer.style.display = 'block';
+                fileInputSection.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

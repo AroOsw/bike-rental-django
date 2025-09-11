@@ -43,7 +43,6 @@ class CrispyChangePasswordForm(ChangePasswordForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = "post"
-        self.helper.form_action = reverse("account_set_password")
         self.helper.form_show_errors = True
         self.helper.error_text_inline = True
         self.helper.help_text_inline = False

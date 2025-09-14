@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/calculate-price/<int:bike_model_id>/', views.calculate_price_ajax, name='calculate_price_ajax'),
     path("contact/", views.contact, name="contact"),
     path("routes/", views.routes, name="routes"),
+    path("routes/download_gpx/<int:id>", views.download_gpx, name="download_gpx"),
     path("terms/", views.terms, name="terms"),
     path("profile/", views.profile, name="profile"),
     # path("logout_user/", views.logout_user, name="logout_user"),

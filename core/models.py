@@ -152,7 +152,7 @@ class ChatMessage(models.Model):
 
 
 class Profile(models.Model):
-    """Model representing a User profile"""
+    """Model representing a User profile."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20, blank=True)
     profile_picture = models.ImageField(upload_to="profile_pics/", default="profile_pics/default_profile.webp")
@@ -165,3 +165,16 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class StravaActivity(models.Model):
+    """Model representing activities from strava app."""
+    activity_id = models.BigIntegerField(unique=True)
+    name = models.CharField(max_length=200)
+    distance = models.FloatField()
+    total_elevation = models.FloatField()
+    start_date = models.DateTimeField()
+    activity_type = models.CharField(max_length=50)
+    summary_polyline = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.activity_id} - {self.name} - {self.distance}"

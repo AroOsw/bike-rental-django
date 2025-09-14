@@ -1,6 +1,76 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
-  <h1>Routes</h1>
+
+<div class="container my-5">
+  <h1 class="text-center text-white mb-4">Our last activities</h1>
+  <p>Explore our favorite cycling routes, available for download or as inspiration for your next ride.</p>
+    <div class="routes-card-container">
+      {% for activity in activities %}
+      <div class="col-12 col-xl-4 col-md-6 p-3">
+        <div class="routes-card bg-dark">
+          <div class="activity card-map p-3">
+            <div id="map-{{ activity.id }}" style="width: 400px; height: 400px;"></div>
+              <input type="hidden" id="polyline-{{ activity.id }}" value="{{ activity.summary_polyline }}">
+          </div>
+            <hr>
+          <div class="card-body p-2">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-transparent text-white border-0">
+                  <i class="fas fa-route me-2 text-success"></i> Distance: {{ activity.distance|floatformat:2 }} km
+                </li>
+                <li class="list-group-item bg-transparent text-white border-0">
+                  <i class="fas fa-mountain me-2 text-success"></i>
+                  Elevation: {{ activity.total_elevation|floatformat:2 }} m
+                </li>
+                <li class="list-group-item bg-transparent text-white border-0">
+                  <i class="fas fa-calendar-alt me-2 text-success"></i>
+                  Date: {{ activity.start_date|date:"d M Y, H:i" }}
+                </li>
+              </ul>
+                <hr>
+              <div class="d-flex justify-content-center p-3">
+                <a href="{% url 'download_gpx' activity.id %}" class="btn btn-success">Download GPX</a>
+              </div>
+          </div>
+        </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+
+{#<div class="container my-5">#}
+{#  <h1 class="text-center mb-5">Our Last Activities</h1>#}
+{#  <div class="routes-card-container row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">#}
+{#    {% for activity in activities %}#}
+{#      <div class="col">#}
+{#        <div class="card h-100 shadow-sm">#}
+{#          <div id="map-{{ activity.id }}" class="map-container"></div>#}
+{#          <div class="card-body">#}
+{#            <h5 class="card-title text-success">{{ activity.name }}</h5>#}
+{#            <ul class="list-group list-group-flush">#}
+{#              <li class="list-group-item text-white">#}
+{#                <i class="fas fa-route me-2 text-success"></i>#}
+{#                Dystans: {{ activity.distance|floatformat:2 }} km#}
+{#              </li>#}
+{#              <li class="list-group-item text-white">#}
+{#                <i class="fas fa-mountain me-2 text-success"></i>#}
+{#                Wysokość: {{ activity.total_elevation|floatformat:2 }} m#}
+{#              </li>#}
+{#              <li class="list-group-item text-white">#}
+{#                <i class="fas fa-calendar-alt me-2 text-success"></i>#}
+{#                Data: {{ activity.start_date|date:"d M Y, H:i" }}#}
+{#              </li>#}
+{#            </ul>#}
+{#            <input type="hidden" id="polyline-{{ activity.id }}" value="{{ activity.summary_polyline }}">#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    {% endfor %}#}
+{#  </div>#}
+{#</div>#}
+
+<script src="{% static 'js/polyline.js' %}"></script>
+
 {% endblock %}

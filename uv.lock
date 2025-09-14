@@ -25,7 +25,9 @@ dependencies = [
     { name = "django-imagekit" },
     { name = "dotenv" },
     { name = "git-filter-repo" },
+    { name = "gpxpy" },
     { name = "pillow" },
+    { name = "polyline" },
     { name = "psycopg2" },
     { name = "psycopg2-binary" },
     { name = "pyjwt" },
@@ -49,7 +51,9 @@ requires-dist = [
     { name = "django-imagekit", specifier = ">=5.0.0" },
     { name = "dotenv", specifier = "==0.9.9" },
     { name = "git-filter-repo", specifier = ">=2.47.0" },
+    { name = "gpxpy", specifier = ">=1.6.2" },
     { name = "pillow", specifier = "==11.3.0" },
+    { name = "polyline", specifier = ">=2.0.3" },
     { name = "psycopg2", specifier = "==2.9.10" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pyjwt", specifier = ">=2.10.1" },
@@ -316,6 +320,15 @@ wheels = [
 ]
 
 [[package]]
+name = "gpxpy"
+version = "1.6.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/20/ad/6f1a34e702c72cb495bb258396f237ded76c00f9fe67054a44d778d24ed9/gpxpy-1.6.2.tar.gz", hash = "sha256:a72c484b97ec42b80834353b029cc8ee1b79f0ffca1179b2210bb3baf26c01ae", size = 111695, upload-time = "2023-11-29T17:25:38.391Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/9f/62df6c1e52462bdd04275b36cec49efa9e8af7e7b834499eb288f73dcfbc/gpxpy-1.6.2-py3-none-any.whl", hash = "sha256:289bc2d80f116c988d0a1e763fda22838f83005573ece2bbc6521817b26fb40a", size = 42649, upload-time = "2023-11-29T17:25:35.76Z" },
+]
+
+[[package]]
 name = "idna"
 version = "3.10"
 source = { registry = "https://pypi.org/simple" }
@@ -416,6 +429,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "polyline"
+version = "2.0.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/65/1f/39ff0fb8b3aca867eac29c1480f78914a919c554c49ddd326b9fd16dff4d/polyline-2.0.3.tar.gz", hash = "sha256:abc786b9332e84f27e6e59fd4fcbcb0c4b9af6a7f7b4175e2eb6c2786278deae", size = 6474, upload-time = "2025-07-30T15:59:57.528Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/72/7faa058dc6548e58cbdb7c6e8e0dbb56516ee941a7785fb74fb455fa28b2/polyline-2.0.3-py3-none-any.whl", hash = "sha256:95ce411d1307e46ad5dcd8f9c8070d8fa8d9efabf072932582f788dd8a6bd8da", size = 6042, upload-time = "2025-07-30T15:59:56.493Z" },
 ]
 
 [[package]]

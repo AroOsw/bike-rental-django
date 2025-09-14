@@ -1,5 +1,7 @@
 import io
 import os
+from datetime import timedelta
+
 import requests
 import urllib3
 from django.utils import timezone
@@ -8,6 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
+from django.db.models import Max
 from core.models import BikeModel, BikeInstance, Reservation, Profile, StravaActivity
 from .forms import BookingForm, EditBookingForm, ProfileForm
 from django.http import JsonResponse, HttpResponse, FileResponse
@@ -183,56 +186,55 @@ def refresh_strava_token():
         print(f"Error during token refreshing: {e}")
         return False
 
-
-def routes(request):
-    """Render the routes page."""
-
+def get_strava_activities():
     activities_url = "https://www.strava.com/api/v3/athlete/activities"
     header = {"Authorization": "Bearer " + os.getenv("STRAVA_ACCESS_TOKEN")}
     param = {"per_page": 100, "page": 1}
+    response = requests.get(activities_url, headers=header, params=param)
+    return response
 
-    try:
-        response = requests.get(activities_url, headers=header, params=param)
-        if response.status_code == 401:
-            if refresh_strava_token():
-                header = {"Authorization": "Bearer " + os.getenv("STRAVA_ACCESS_TOKEN")}
-                response = requests.get(activities_url, headers=header, params=param)
-            else:
-                return HttpResponse("Couldn't refresh token, please try again.", status=401)
+def routes(request):
+    """Render the routes page."""
+    last_update_info = StravaActivity.objects.aggregate(Max("updated_at"))
+    last_updated_at = last_update_info["updated_at__max"]
 
-        response.raise_for_status()
-        activities = response.json()
+    if last_updated_at is None or (timezone.now() - last_updated_at) > timedelta(hours=24):
+        try:
+            response = get_strava_activities()
+            if response.status_code == 401:
+                if refresh_strava_token():
+                    response = get_strava_activities()
+                else:
+                    return HttpResponse("Couldn't refresh token, please try again.", status=401)
 
-        for activity in activities:
-            if activity["type"] == "Ride":
-                summary_polyline = activity.get("map", {}).get("summary_polyline", "")
+            response.raise_for_status()
+            activities = response.json()
 
-                StravaActivity.objects.update_or_create(
-                    activity_id=activity["id"],
-                    defaults={
-                        "name": activity["name"],
-                        "distance": float(activity["distance"]/1000),
-                        "total_elevation": activity["total_elevation_gain"],
-                        "start_date": activity["start_date"],
-                        "activity_type": activity["type"],
-                        "summary_polyline": summary_polyline,
-                    }
-                )
+            for activity in activities:
+                if activity["type"] == "Ride":
+                    summary_polyline = activity.get("map", {}).get("summary_polyline", "")
 
-    except requests.exceptions.RequestException as e:
-        return HttpResponse(f"Couldn't download activities.{e}", status=500)
+                    StravaActivity.objects.update_or_create(
+                        activity_id=activity["id"],
+                        defaults={
+                            "name": activity["name"],
+                            "distance": float(activity["distance"]/1000),
+                            "total_elevation": activity["total_elevation_gain"],
+                            "start_date": activity["start_date"],
+                            "activity_type": activity["type"],
+                            "summary_polyline": summary_polyline,
+                        }
+                    )
+
+        except requests.exceptions.RequestException as e:
+            return HttpResponse(f"Couldn't download activities.{e}", status=500)
 
     activities = StravaActivity.objects.filter(distance__gte=30).order_by("-start_date")[:9]
-    for activity in activities:
-        gpx = generate_gpx_file(activity.summary_polyline)
-
-
 
     return render(request, "routes.html", {"activities": activities})
 
 def download_gpx(request, id):
     activity = get_object_or_404(StravaActivity, id=id)
-    print(activity)
     gpx_object = generate_gpx_file(activity.summary_polyline)
 
     if gpx_object is None:

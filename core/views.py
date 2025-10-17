@@ -31,7 +31,6 @@ def bikes(request, slug):
         all_bikes = BikeModel.objects.prefetch_related("instances")
         return render(request, "bikes.html", {
             "all_bikes": all_bikes,
-
         })
     bike_type = BikeModel.objects.filter(type=slug).all()
     return render(request, "bikes.html", {
@@ -131,7 +130,6 @@ def reservation_edit(request, reservation_id):
         reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
         if request.method == "POST":
             booking_form = EditBookingForm(request.POST, instance=reservation)
-            print(booking_form)
             if booking_form.is_valid():
                 updated_reservation = booking_form.save(commit=False)
                 updated_reservation.start_time = booking_form.cleaned_data["start_time"]
@@ -260,6 +258,11 @@ def profile(request):
     user_profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
+        username = request.POST.get("username")
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "This username already exists")
+            return redirect("profile")
+
         profile_form = ProfileForm(request.POST, request.FILES, instance=user_profile, user=request.user)
         if profile_form.is_valid():
             profile_form.save()

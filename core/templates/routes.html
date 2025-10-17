@@ -2,12 +2,20 @@
 {% load static %}
 
 {% block content %}
+<div class="col-xxl-11 col-12 mx-auto">
+{#  <section class="mx-auto bg-image flex justify-content-center">#}
+{#           style="background-image:url({% static 'webp_images/chaam.webp' %});">#}
 
+
+{#  </section>#}
+</div>
 <div class="container my-5">
-  <h1 class="text-center text-white mb-4">Our last activities</h1>
-  <p>Explore our favorite cycling routes, available for download or as inspiration for your next ride.</p>
-    <div class="routes-card-container">
-      {% for activity in activities %}
+  <div class="text-overlay text-center py-3 my-4">
+    <h2><span class="wild-text">Our </span>last activities</h2>
+    <p class="bold">Explore our favorite cycling routes, available for download or as inspiration to edit for your next ride.</p>
+  </div>
+  <div class="routes-card-container">
+    {% for activity in activities %}
       <div class="col-12 col-xl-4 col-md-6 p-3">
         <div class="routes-card bg-dark">
           <div class="activity card-map p-3">
@@ -15,7 +23,7 @@
               <input type="hidden" id="polyline-{{ activity.id }}" value="{{ activity.summary_polyline }}">
           </div>
             <hr>
-          <div class="card-body p-2">
+          <div class="card-body">
               <ul class="list-group list-group-flush">
                 <li class="list-group-item bg-transparent text-white border-0">
                   <i class="fas fa-route me-2 text-success"></i> Distance: {{ activity.distance|floatformat:2 }} km
@@ -30,13 +38,13 @@
                 </li>
               </ul>
                 <hr>
-              <div class="d-flex justify-content-center p-3">
+              <div class="d-flex justify-content-center pb-3">
                 <a href="{% url 'download_gpx' activity.id %}" class="btn btn-success">Download GPX</a>
               </div>
           </div>
         </div>
-    </div>
-  {% endfor %}
+      </div>
+    {% endfor %}
   </div>
 </div>
 

@@ -7,7 +7,7 @@
   <div class="my-6 d-flex justify-content-center align-items-center"  data-bs-theme="dark">
     <div class="col-10 col-md-8 col-lg-6 col-xl-5">
       <div class="card" style="border-radius: 1rem;">
-        <div class="card-body p-5 text-center">
+        <div class="card-body p-3 text-center">
           <div id="booking-form" class="reservation-section">
               {% if user.is_authenticated %}
                 <h3 class="bike-details-title text-center">Edit your reservation for</h3>
@@ -22,7 +22,7 @@
                             <i class="bi bi-calculator"></i> Rental Cost
                           </h4>
                           <hr>
-                          <div class="row text-center">
+                          <div class="row">
                             <div class="col-4">
                               <small class="text-muted">Days</small>
                               <p class="h5 mb-0"><span id="rental-days">0</span></p>
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function isDateReserved(date) {
         const checkDate = new Date(date);
-        checkDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+        checkDate.setHours(12, 0, 0, 0);
 
         for (const res of reservationRanges) {
             const resFrom = new Date(res.from);
@@ -127,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
             time_24hr: true,
             minTime: "08:00",
             maxTime: "18:00",
-            // Force desktop mode on mobile to maintain custom styling
             disableMobile: true,
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const day = dayElem.dateObj;

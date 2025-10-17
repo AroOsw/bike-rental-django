@@ -4,7 +4,7 @@ import os
 
 save_path = r"E:\BikeRental\bike-rental-django\core\static\webp_images"
 # directory_path = r"E:\BikeRental\bike-rental-django\core\static\images"
-photo_path = r"E:\BikeRental\bike-rental-django\core\static\images\Wild_Wheel_rental_logo_bk.png"
+photo_path = r"E:\BikeRental\bike-rental-django\core\static\images\20250913_095908.jpg"
 #
 #
 # if os.path.exists(directory_path):
@@ -25,7 +25,7 @@ if os.path.exists(photo_path):
     img = Image.open(photo_path)
     file_name = os.path.basename(photo_path)
     name = os.path.splitext(file_name)[0] + ".webp"
-    img.save(os.path.join(save_path, name), "WEBP", quality=85, optimize=True)
+    img.save(os.path.join(save_path, name), "WEBP", quality=75, optimize=True)
 else:
     print(f"File not found: {photo_path}")
 

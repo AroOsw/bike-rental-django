@@ -82,9 +82,6 @@ class CrispyChangePasswordForm(ChangePasswordForm):
                 css_class="d-flex justify-content-center my-4")
         )
 
-
-
-
 class LoginForm(AllauthLoginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

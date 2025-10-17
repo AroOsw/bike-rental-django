@@ -8,6 +8,10 @@
   --p-fluid: clamp(1rem, 2vw, 1.25rem);
   --small-fluid: clamp(0.8rem, 1.5vw, 1rem);
   --bs-success-rgb: 106, 158, 57;
+  --dark-card-bg: #1e1e1e;
+  --text-primary: #ffffff;
+  --text-secondary: #adb5bd;
+  --accent-green: #6A9E39;
 }
 
 html {
@@ -25,7 +29,7 @@ body {
   overflow-x: hidden;
 }
 
-div, img, input, button, .card {
+div, img, input, button .card {
   border-radius: 8px;
 }
 
@@ -48,8 +52,16 @@ p {
   font-size: var(--p-fluid);
 }
 
+.navbar {
+  font-size: 1.2rem;
+}
+
 .navbar-brand {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.navbar-logo {
+  border-radius: 50%;
 }
 
 .wild-text {
@@ -140,7 +152,7 @@ p {
 }
 
 .text-overlay {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 10px;
   font-weight: bold;
 }
@@ -170,10 +182,16 @@ p {
   width: clamp(300px, 90vw, 340px);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
   margin: 10px;
   color: var(--text-dark);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bike-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
 }
 
 .bike-card-content h2,
@@ -263,7 +281,6 @@ p {
 }
 
 hr {
-  margin: 0;
   height: 0.5rem;
   border: none;
   background: linear-gradient(to right, rgb(49, 105, 13), rgba(37, 117, 252));
@@ -471,7 +488,7 @@ span.flatpickr-weekday {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
 
-/*Mobile calendar responsive styles*/
+
 @media (max-width: 768px) {
   .flatpickr-calendar {
     position: fixed !important;
@@ -488,14 +505,12 @@ span.flatpickr-weekday {
     display: block !important;
   }
 
-  /* Larger touch targets for mobile */
   .flatpickr-day {
     height: 40px !important;
     line-height: 40px !important;
     font-size: 14px !important;
   }
 
-  /* Time picker adjustments */
   .flatpickr-time input {
     font-size: 16px !important;
     height: 40px !important;
@@ -505,7 +520,6 @@ span.flatpickr-weekday {
     font-size: 16px !important;
   }
 
-  /* Mobile overlay */
   .flatpickr-calendar::before {
     content: '';
     position: fixed;
@@ -517,8 +531,6 @@ span.flatpickr-weekday {
     z-index: -1;
   }
 }
-
-/*End of calendar style*/
 
 .price-panel {
   background-color: #2b3035;
@@ -539,6 +551,13 @@ span.flatpickr-weekday {
 
 .reservation-card {
   border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reservation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
 }
 
 .reservation-card i {
@@ -585,10 +604,6 @@ span.flatpickr-weekday {
   border-radius: 50%;
 }
 
-.routes-card {
- /*background: black;*/
-}
-
 .routes-card-container {
   display: flex;
   flex-wrap: wrap;
@@ -599,4 +614,155 @@ span.flatpickr-weekday {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.routes-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.routes-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+.google-map {
+  display: flex;
+  justify-content: center;
+  height: 25vh;
+}
+
+.testimonial-card {
+    background-color: var(--dark-card-bg);
+    border: 1px solid #343a40;
+    border-radius: 15px;
+    padding: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.testimonial-card .quote-icon {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.05);
+    z-index: 1;
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.testimonial-card .rating .fa-star {
+    color: var(--accent-green);
+}
+
+.testimonial-card .rating .fa-star.empty {
+    color: #495057;
+}
+
+.testimonial-card .testimonial-text {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: auto;
+    padding-bottom: 20px;
+}
+
+.testimonial-card .badge-custom-green {
+    background-color: rgba(25, 135, 84, 0.2);
+    color: var(--accent-green);
+    border: 1px solid var(--accent-green);
+    font-weight: 500;
+}
+
+.testimonial-card .user-info {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.testimonial-card .avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--accent-green);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.testimonial-card .user-details .name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.testimonial-card .user-details .location {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+.customer-photos {
+  padding: 50px 20px;
+  text-align: center;
+  background-color: #f8f8f8; /* Jasne tło, aby sekcja się wyróżniała */
+}
+
+.customer-photos h2 {
+  font-size: 2.5em;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.photo-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.photo-card:hover {
+  transform: scale(1.03); /* Powiększenie karty po najechaniu */
+}
+
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease-in-out;
+}
+
+.photo-card:hover img {
+  transform: scale(1.1); /* Powiększenie zdjęcia wewnątrz karty */
+}
+
+
+@media (max-width: 768px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
 }

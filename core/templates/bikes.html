@@ -14,10 +14,19 @@
   </section>
 </div>
 
-<div class="bike-card-container">
+<div class="mx-auto col-xxl-9 col-xl-11 bike-card-container my-5">
 {% for bike in all_bikes %}
+  {% if bike.main_instance %}
   <div class="bike-card bg-dark">
-    <img src="{{ bike.main_instance.img_thumbnail.url }}" alt="{{ bike.bike_model.brand }} - {{ bike.bike_model.model }}">
+    {% if bike.main_instance.bike_img %}
+      <img src="{{ bike.main_instance.img_thumbnail.url }}"
+           alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
+           loading="lazy">
+    {% else %}
+      <img src="{% static 'images/Wild_Wheel_rental_logo.webp' %}"
+           alt="Placeholder image"
+           loading="lazy">
+    {% endif %}
     <div class="bike-card-content">
       <h3>{{ bike.brand }}</h3>
       <h3>{{ bike.model }}</h3>
@@ -28,6 +37,7 @@
       <a href="{% url 'bike_details' bike.slug %}" class="btn btn-success">View Details</a>
     </div>
   </div>
+  {% endif %}
   {% endfor %}
 </div>
 

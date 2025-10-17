@@ -12,10 +12,9 @@
                  alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
                  loading="lazy">
           {% else %}
-            <img src="{% static 'images/placeholder.webp' %}"
+            <img src="{% static 'images/Wild_Wheel_rental_logo.webp' %}"
                  alt="Placeholder image"
                  loading="lazy">
-
         {% endif %}
       </div>
     </div>
@@ -164,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function isDateReserved(date) {
         const checkDate = new Date(date);
-        checkDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+        checkDate.setHours(12, 0, 0, 0);
 
         for (const res of reservationRanges) {
             const resFrom = new Date(res.from);
@@ -179,38 +178,38 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
 
-    {#function validateDateSelection() {#}
-    {#    const startDate = startTimeInput.value;#}
-    {#    const endDate = endTimeInput.value;#}
-    {##}
-    {#    if (startDate && isDateReserved(new Date(startDate))) {#}
-    {#        alert('Selected start date is not available. Please choose another date.');#}
-    {#        startTimeInput.value = '';#}
-    {#        return false;#}
-    {#    }#}
-    {##}
-    {#    if (endDate && isDateReserved(new Date(endDate))) {#}
-    {#        alert('Selected end date is not available. Please choose another date.');#}
-    {#        endTimeInput.value = '';#}
-    {#        return false;#}
-    {#    }#}
-    {##}
-    {#    // Check if any date in the range is reserved#}
-    {#    if (startDate && endDate) {#}
-    {#        const start = new Date(startDate);#}
-    {#        const end = new Date(endDate);#}
-    {##}
-    {#        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {#}
-    {#            if (isDateReserved(d)) {#}
-    {#                alert('Some dates in your selected range are not available. Please choose different dates.');#}
-    {#                startTimeInput.value = '';#}
-    {#                endTimeInput.value = '';#}
-    {#                return false;#}
-    {#            }#}
-    {#        }#}
-    {#    }#}
-    {##}
-    {#    return true;#}
+    function validateDateSelection() {
+        const startDate = startTimeInput.value;
+        const endDate = endTimeInput.value;
+
+        if (startDate && isDateReserved(new Date(startDate))) {
+            alert('Selected start date is not available. Please choose another date.');
+            startTimeInput.value = '';
+            return false;
+        }
+
+        if (endDate && isDateReserved(new Date(endDate))) {
+            alert('Selected end date is not available. Please choose another date.');
+            endTimeInput.value = '';
+            return false;
+        }
+
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                if (isDateReserved(d)) {
+                    alert('Some dates in your selected range are not available. Please choose different dates.');
+                    startTimeInput.value = '';
+                    endTimeInput.value = '';
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
 
     function initializeFlatpickr(reservations) {
@@ -229,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
             time_24hr: true,
             minTime: "08:00",
             maxTime: "18:00",
-            // Force desktop mode on mobile to maintain custom styling
             disableMobile: true,
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const day = dayElem.dateObj;

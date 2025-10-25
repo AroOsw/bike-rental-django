@@ -55,7 +55,7 @@ class BikeModel(models.Model):
         elif num_days >= 3:
             price_per_day *= (1 - DISCOUNT_3_DAYS)
 
-        return price_per_day
+        return round(price_per_day, 2)
 
     def __str__(self):
         """Returns a string representation of the bike, including its brand and model."""

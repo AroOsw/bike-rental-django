@@ -28,183 +28,163 @@
 <!--  </div>-->
 <header>
   <div class="p-1"
-       style="background-image:url({% static 'images/hero_img.png' %});
-              height: 100vh;
+       style="background-image:url({% static 'webp_images/hero_img.webp' %});
+              height: calc(100vh - 69px);
               background-repeat: no-repeat;
               background-size: cover;
-              background-position: center;">
+              background-position: center;
+              border-radius: 0px;">
     <div class="d-flex justify-content-center align-items-center h-100">
-      <div class="text-center text-overlay p-2">
-        <h1 class="mb-3">Welcome to <span class="wild-text">Wild</span>Wheel Rental</h1>
-        <h5 class="mb-4">Discover the joy of cycling in Thailand with our easy-to-use bike rental platform.</h5>
-        <a class="btn btn-outline-success btn-lg m-2" href="{% url 'bikes' 'all' %}" role="button">Our Bikes</a>
-        <a class="btn btn-outline-success btn-lg m-2" href="#about-us" role="button">About Us</a>
+      <div class="text-center hero-overlay p-2">
+        <h1 class="mb-3"><span class="wild-text">The</span> Simplest Way to Rent Your Perfect Bike in Thailand.</h1>
+        <h5 class="mb-4">Discover the true joy of cycling with our easy-to-use bike rental platform.</h5>
+        <a class="btn btn-success btn-lg m-2" href="{% url 'bikes' 'all' %}" role="button">Our Bikes</a>
+        <a class="btn btn-success btn-lg m-2" href="#about-us" role="button">About Us</a>
       </div>
     </div>
   </div>
 </header>
 
-<div class="container my-5 flex col-xxl-10 col-12">
+<div class="container my-5 flex col-12 col-xxl-11 col-md-9">
   <div id="about-us" class="container marketing py-3 bg-dark">
-<!--    <div class="row justify-content-center">-->
-<!--      <div class="col-lg-4">-->
-<!--        <div class="d-flex justify-content-center">-->
-<!--          <img src="{% static 'webp_images/laptop.webp' %}"-->
-<!--               class="object-cover img-fluid rounded-circle"-->
-<!--               alt="Laptop"-->
-<!--               loading="lazy"/>-->
-<!--        </div>-->
-<!--        <h3 class="my-2 wild-text">Unforgettable Rides, Seamless Booking</h3>-->
-<!--        <p>-->
-<!--          Planning your cycling adventure should be as easy as riding a bike. Our intuitive online booking system-->
-<!--          allows you to browse available bikes, select your dates, and secure your rental in just a few simple-->
-<!--          steps. No hidden fees, no complicated procedures – just a straightforward path to your next great ride. We-->
-<!--          prioritize convenience and transparency to make your experience truly hassle-free.-->
-<!--        </p>-->
-<!--      </div>-->
-<!--      <div class="col-lg-4">-->
-<!--        <div class="d-flex justify-content-center">-->
-<!--          <img src="{% static 'webp_images/temple_copy.webp' %}"-->
-<!--               class="object-cover img-fluid rounded-circle"-->
-<!--               alt="Temple"-->
-<!--               loading="lazy"/>-->
-<!--        </div>-->
-<!--        <h3 class="my-2 wild-text">Ready for Your Next Adventure? Let's Get Rolling!</h3>-->
-<!--        <p>-->
-<!--          Don't just dream about exploring Thailand – experience it on two wheels with WildWheel Rental. Our-->
-<!--          friendly team is here to help you plan your perfect cycling adventure. Browse our extensive fleet online,-->
-<!--          choose your ideal bike, and get ready to create unforgettable memories.-->
-<!--        </p>-->
+    <section class="about-us">
+      <div class="row align-items-center">
+        <div class="col-12 col-xl-6">
+          <h3 class="wild-text lh-1">We Built Wild<span style="color: var(--bs-body-color);">Wheel</span> for Explorers
+            Like You</h3>
+          <p>
+            Hua Hin's true magic lies beyond the crowded markets and hotel strips.
+            <strong>Hidden temples</strong>, <strong>family-run restaurants</strong>,
+            and <strong>secret beaches</strong> the real Thailand is waiting. Bike is the key to finding it.
+          </p>
 
-<!--      </div>-->
-<!--      <div class="col-lg-4">-->
-<!--        <div class="d-flex justify-content-center">-->
-<!--          <img src="{% static 'webp_images/service.webp' %}"-->
-<!--               class="object-cover img-fluid rounded-circle"-->
-<!--               alt="Service tools"-->
-<!--               loading="lazy"/>-->
-<!--        </div>-->
-<!--        <h3 class="my-2 wild-text">Your Safety & Comfort, Our Priority</h3>-->
-<!--        <p>-->
-<!--          Your cycling journey with WildWheel Rental is backed by our commitment to safety and comfort. Every bike-->
-<!--          undergoes a thorough inspection and professional maintenance before each rental. We provide helmets and-->
-<!--          lockers with every rental and offer optional accessories like child seats, baskets, and phone holders to-->
-<!--          enhance your ride.-->
-<!--        </p>-->
-<!--      </div>-->
-<!--    </div>-->
+          <h4 class="wild-text mt-4">Why Trust Your Adventure to Wild<span
+              style="color: var(--bs-body-color);">Wheel</span>?</h4>
+          <ul>
+            <li>✔️ No Hidden Fees: Transparent pricing means what you see is what you pay—nothing sketchy.</li>
+            <li>🔒 No Passport Hostage Schemes: We trust you. No surprise fees when you return.</li>
+            <li>🔧 Guaranteed Reliability: Every bike is professionally maintained and safety-checked. No breakdowns
+              5 km into your ride.
+            </li>
+            <li>🤝 Trusted by Others: Over 1,000 travelers have successfully explored Thailand with us.</li>
+          </ul>
 
-    <!-- START THE FEATURETTES -->
-    <section>
-      <hr class="featurette-divider">
-      <div class="row featurette align-items-center">
-        <div class="col-md-7">
-          <h3 class="wild-text lh-1">Why Choose WildWheel Rental?</h3>
-          <p class="main-p">At WildWheel Rental, we're more than just a bike rental service – we're your local
-            partners
-            in exploring the stunning beauty of Thailand. With our deep roots in Hua Hin and a genuine passion for
-            cycling, we offer unparalleled local expertise, top-quality bikes, and a commitment to making your
-            journey
-            truly unforgettable. We pride ourselves on transparent pricing, flexible rental options, and
-            personalized
-            support from our friendly team. Choose us for an authentic and joyful cycling experience, backed by
-            local
-            knowledge and genuine care.</p></div>
-        <div class="col-md-5">
-          <img src="{% static 'webp_images/rental_front.webp' %}"
-               class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" height="500"
-               alt="rental shop window" loading="lazy"/>
+          <p>
+            We believe bike rental should be simple, safe, and honest. Just grab your helmet, get on the road, and focus
+            on the adventure.
+          </p>
         </div>
+          <div class="d-flex justify-content-center mx-auto col-12 col-xl-6">
+            <div class="ratio ratio-1x1">
+              <video autoplay loop muted playsinline>
+                <source src="/static/video/ww_promo.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
       </div>
-      <hr class="featurette-divider">
-      <div class="row featurette align-items-center">
-        <div class="col-md-7 order-md-2">
-          <h3 class="wild-text lh-1">Choose Your Perfect Bike</h3>
-          <p class="main-p">Whether you're a seasoned cyclist looking for a challenge or a casual rider seeking a
-            leisurely tour, our
-            diverse collection has something for everyone. We offer a wide range of bikes to suit your needs
-          <ul class="main-p">
-            <li><a href="#" class="wild-text">Mountain Bikes:</a>
-              For rugged trails and adventurous off-road excursions.
+
+      <hr>
+
+      <div class="row align-items-center">
+        <div class="d-flex justify-content-center col-12 col-lg-5 ps-2 pe-0">
+          <img src="{% static 'webp_images/sunset.webp' %}"
+               class="img-fluid mx-auto" alt="Mountain bikes on beach at sunrise - WildWheel Rental" loading="lazy"/>
+        </div>
+        <div class="col-12 col-lg-7">
+          <h3 class="wild-text lh-1">Every bike tells a different story. Which one will be yours?</h3>
+          <ul>
+            <li>
+              <a href="{% url 'bikes' 'road' %}"><strong class="wild-text">🏁️ Road Bikes</strong></a>
+              <br>
+              Cover serious ground in style. Glide effortlessly along Thailand's scenic highways, from coastal
+              panoramas to mountain passes. Perfect for long-distance explorers who want to see more, ride faster,
+              and feel the exhilaration of true cycling freedom.
             </li>
-            <li><a href="#" class="wild-text">City Bikes:</a>
-              Perfect for urban exploration and comfortable commutes.
+            <li>
+              <a href="{% url 'bikes' 'mountain' %}"><strong class="wild-text">🚵 Mountain Bikes</strong></a>
+              <br>
+              Conquer jungle trails and hidden waterfalls. Feel the adrenaline as you navigate Thailand's
+              rugged terrain with pro-grade suspension.
             </li>
-            <li><a href="#" class="wild-text">Road Bikes:</a>
-              For speed and long-distance touring on paved roads.
+            <li>
+              <a href="{% url 'bikes' 'electric' %}"><strong class="wild-text">⚡ E-Bikes</strong></a>
+              <br>
+              Explore 3x more without breaking a sweat. Glide up coastal hills effortlessly while locals
+              wave and stunning views unfold.
             </li>
-            <li><a href="#" class="wild-text">Electric Bikes:</a>
-              For an effortless boost on hilly terrains or longer journeys.
+            <li>
+              <a href="{% url 'bikes' 'trekking' %}"><strong class="wild-text">🚴 Trekking</strong></a>
+              <br>
+              Discover Hua Hin's soul — from bustling markets to quiet temple courtyards. Perfect for
+              leisurely exploration and cafe hopping.
             </li>
           </ul>
-          <p class="main-p">Find the bike that perfectly matches your adventure style!</p></div>
-        <div class="col-md-5 order-md-1">
-          <img src="{% static 'webp_images/sunset.webp' %}"
-               class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" height="500"
-               alt="three MTB on the beach witch sunrise" loading="lazy"/>
+          <p>
+            <strong>All bikes include:</strong>
+            Saddlebag with spare innertube and levers, multitool, mini pump,2 Bottle cages.
+          </p>
         </div>
       </div>
-      <hr class="featurette-divider">
-      <div class="row featurette align-items-center">
-        <div class="col-md-7">
-          <h3 class="wild-text lh-1">Discover Hua Hin & Beyond</h3>
-          <p class="main-p">Unleash the full potential of your cycling adventure with WildWheel Rental's exclusive
-            access to local knowledge. Beyond just providing a bike, we offer curated route suggestions tailored to
-            your skill level and interests. Explore serene coastal paths, discover hidden temples, or embark on
-            challenging mountain trails. Our team, comprised of local cycling enthusiasts, is always ready to share
-            insider tips on the best viewpoints, local eateries, and cultural gems Hua Hin and its surroundings have
-            to offer. Let us help you map out an unforgettable journey!</p></div>
-        <div class="col-md-5">
-          <img src="{% static 'webp_images/employees.webp' %}"
-               class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" height="500"
-               alt="WildWheel employees" loading="lazy"/>
+
+      <hr>
+
+      <div class="row align-items-center">
+        <div class="col-12 col-lg-7">
+          <h3 class="wild-text lh-1">Ready-Made Routes to Hua Hin's and the surrounding area Hidden Gems</h3>
+          <p>
+            Forget generic Google Maps. We've spent years discovering the places locals actually go—ancient
+            temples buried in jungle trails, viewpoints tourists never find, and coconut plantations where
+            time moves slower.
+          </p>
+          <p>
+            <strong>Want to explore:</strong> Secret beaches where fishing boats return at sunset? Mountain
+            viewpoints overlooking Hua Hin's coastline? Traditional markets selling fresh mangoes for 30 baht?
+            Trails through pine forests where the only sound is wind and birds?
+          </p>
+          <p>
+            We've mapped it all for you.
+            <a href="{% url 'routes' %}" class="wild-text"><strong>Download our favorite routes as .gpx
+              files</strong></a>
+            and ride with confidence—complete with turn-by-turn directions, rest stops, and insider tips that
+            took us years to discover. No tour groups. No schedules. Just you, your bike, and the real Hua Hin.
+          </p>
         </div>
-      </div>
-    </section>
-    <hr>
-    <section>
-      <div class="hero-vide-container mx-auto d-flex justify-content-center">
-        <div class="ratio ratio-16x9 w-100">
-          <video autoplay loop muted playsinline>
-            <source src="{% static 'video/Wildwheel_720p.mp4' %}" type="video/mp4; codecs=hevc">
-            <source src="{% static 'video/Wildwheel_720p264.mp4' %}" type="video/mp4">
-          </video>
+        <div class="d-flex justify-content-center col-12 col-lg-5 ps-0 pe-2">
+          <img src="{% static 'webp_images/employees.webp' %}" class="img-fluid mx-auto"
+               alt="WildWheel local cycling experts in Hua Hin" loading="lazy"/>
         </div>
       </div>
     </section>
 
     <hr>
+
     <section class="testimonials-section">
       <div class="container">
         <div class="row justify-content-center text-center mb-5">
-          <div class="col-md-8">
+          <div class="col-11">
             <h2>Adventures That Inspire</h2>
-            <p class="lead intro-text">Real stories from adventurers who explored Thailand with WildWheel. Join
-              thousands of satisfied customers from around the world.</p>
+            <p class="lead intro-text">Real stories from adventurers who explored Thailand with <span class="wild-text">Wild</span>Wheel.
+              Join
+              hundreds of satisfied customers from around the world.</p>
           </div>
         </div>
-
-        <div class="row text-center mb-5 pb-3">
-          <div class="col-md-3 col-6 mb-4 stat-item">
+        <div class="row text-center d-flex justify-content-center mb-2 ">
+          <div class="col-md-4 col-6 mb-4 stat-item">
             <h3>1,000+</h3>
             <p>Happy Customers</p>
           </div>
-          <div class="col-md-3 col-6 mb-4 stat-item">
+          <div class="col-md-4 col-6 mb-4 stat-item">
             <h3>4.9/5</h3>
             <p>Average Rating</p>
           </div>
-          <div class="col-md-3 col-6 mb-4 stat-item">
+          <div class="col-md-4 col-6 mb-4 stat-item">
             <h3>99.3%</h3>
             <p>Satisfaction Rate</p>
           </div>
-          <div class="col-md-3 col-6 mb-4 stat-item">
-            <h3>24/7</h3>
-            <p>Support Available</p>
-          </div>
         </div>
 
-        <div class="row g-4">
-          <div class="col-lg-4 col-md-6">
+        <div class="row g-4 d-flex justify-content-center">
+          <div class="col-xl-4 col-lg-6 col-md-6">
             <div class="testimonial-card">
               <i class="fas fa-quote-left quote-icon"></i>
               <div class="card-content">
@@ -212,15 +192,15 @@
                   <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
                     class="fas fa-star"></i><i class="fas fa-star"></i>
                 </div>
-                <p class="testimonial-text">"Absolutely incredible experience! The mountain bike was in perfect
-                  condition and the staff gave us amazing route recommendations. Explored hidden temples and scenic
-                  trails we never would have found otherwise. Will definitely rent again on our next visit to
+                <p class="testimonial-text">"Absolutely incredible experience! The road bike was in perfect
+                  condition and the staff gave me amazing route recommendations. Explored hidden temples and scenic
+                  routes I never would have found otherwise. Will definitely rent again on my next visit to
                   Thailand!"</p>
                 <span class="badge rounded-pill badge-custom-green mb-3">Mountain Adventure - 3 days</span>
                 <div class="user-info">
-                  <div class="avatar">SJ</div>
+                  <div class="avatar">DJ</div>
                   <div class="user-details">
-                    <div class="name">Sarah Johnson</div>
+                    <div class="name">Dave Johnson</div>
                     <div class="location">Australia</div>
                   </div>
                 </div>
@@ -228,7 +208,7 @@
             </div>
           </div>
 
-          <div class="col-lg-4 col-md-6">
+          <div class="col-xl-4 col-lg-6 col-md-6">
             <div class="testimonial-card">
               <i class="fas fa-quote-left quote-icon"></i>
               <div class="card-content">
@@ -251,7 +231,7 @@
             </div>
           </div>
 
-          <div class="col-lg-4 col-md-6">
+          <div class="col-xl-4 col-lg-6 col-md-6 margin-auto">
             <div class="testimonial-card">
               <i class="fas fa-quote-left quote-icon"></i>
               <div class="card-content">
@@ -273,29 +253,62 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
-    <section class="customer-photos">
-      <h2>Discover Thailand like our customers</h2>
-      <div class="photo-grid">
 
-        <div class="photo-card col-md-4">
-          <img src="{% static 'webp_images/20250306_151121.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie" />
-        </div>
+    <hr>
 
-        <div class="photo-card col-md-4">
-          <img src="{% static 'webp_images/20250306_151121.webp' %}" alt="Widok z góry na zatokę" />
-        </div>
+    <section class="objection-section">
+      <div class="container text-center">
+        <h2>Peace of Mind on Every Ride</h2>
+        <h3>What if I get a flat tire or have a problem on the road?</h3>
+        <p>We understand that riding in a new country can raise concerns. Your safety and convenience are our
+          priority. Every rental includes a free helmet, a basic repair kit, and—most importantly—our local emergency
+          support number. If you have any issue, just call us. We make exploring Hua Hin simple, safe, and secure.</p>
+        <a href="{% url 'bikes' 'all' %}" class="btn btn-success">SECURE YOUR BIKE TODAY!</a>
+        <small class="m-2 fst-italic d-block">*(Limited Bikes Available During Peak Season)*</small>
+      </div>
+    </section>
 
-        <div class="photo-card col-md-4">
-          <img src="{% static 'webp_images/20250306_151121.webp' %}" alt="Grupa przyjaciół na postoju" />
-        </div>
+    <hr>
 
+    <section>
+      <div class="container text-center">
+        <h2 class="m-5">Discover Thailand like our customers</h2>
+        <div class="row d-flex justify-content-center align-items-center pb-3">
+          <a href="{% static 'converted/chaam.webp' %}" data-lightbox="users-gallery"
+             class="col-lg-4 col-md-6 col-12 mb-3">
+            <img src="{% static 'converted/chaam.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie" class="img-fluid">
+          </a>
+          <a href="{% static 'webp_images/gallery3.webp' %}" data-lightbox="users-gallery"
+             class="col-lg-4 col-md-6 col-12 mb-3">
+            <img src="{% static 'webp_images/gallery3.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie"
+                 class="img-fluid">
+          </a>
+          <a href="{% static 'webp_images/gallery4.webp' %}" data-lightbox="users-gallery"
+             class="col-lg-4 col-md-6 col-12 mb-3">
+            <img src="{% static 'webp_images/gallery4.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie"
+                 class="img-fluid">
+          </a>
+          <a href="{% static 'webp_images/gallery7.webp' %}" data-lightbox="users-gallery"
+             class="col-lg-4 col-md-6 col-12 mb-3">
+            <img src="{% static 'webp_images/gallery7.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie"
+                 class="img-fluid">
+          </a>
+          <a href="{% static 'webp_images/gallery11.webp' %}" data-lightbox="users-gallery"
+             class="col-lg-4 col-md-6 col-12 mb-3">
+            <img src="{% static 'webp_images/gallery11.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie"
+                 class="img-fluid">
+          </a>
+          <a href="{% static 'webp_images/gallery9.webp' %}" data-lightbox="users-gallery"
+             class="col-lg-4 col-md-6 col-12 mb-3">
+            <img src="{% static 'webp_images/gallery9.webp' %}" alt="Rowerzysta w tropikalnym krajobrazie"
+                 class="img-fluid">
+          </a>
         </div>
+      </div>
     </section>
   </div>
 </div>
-<!--</main>-->
 {% endblock %}

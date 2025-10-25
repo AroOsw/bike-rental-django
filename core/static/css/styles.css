@@ -73,6 +73,11 @@ p {
   margin-bottom: 5rem !important;
 }
 
+.about img {
+  height: 400px;
+  width: 100%;
+}
+
 .messages {
   position: fixed;
   top: 0;
@@ -151,8 +156,14 @@ p {
   }
 }
 
+.hero-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  font-weight: bold;
+  }
+
 .text-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   font-weight: bold;
 }
@@ -718,7 +729,7 @@ span.flatpickr-weekday {
 .customer-photos {
   padding: 50px 20px;
   text-align: center;
-  background-color: #f8f8f8; /* Jasne tło, aby sekcja się wyróżniała */
+  background-color: #f8f8f8;
 }
 
 .customer-photos h2 {
@@ -745,7 +756,7 @@ span.flatpickr-weekday {
 }
 
 .photo-card:hover {
-  transform: scale(1.03); /* Powiększenie karty po najechaniu */
+  transform: scale(1.03);
 }
 
 .photo-card img {
@@ -757,7 +768,7 @@ span.flatpickr-weekday {
 }
 
 .photo-card:hover img {
-  transform: scale(1.1); /* Powiększenie zdjęcia wewnątrz karty */
+  transform: scale(1.1);
 }
 
 
@@ -765,4 +776,64 @@ span.flatpickr-weekday {
   .photo-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+.faq-icon-header {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--primary-color);
+    background-color: #343a40;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(106, 158, 57, 0.5);
+    border-color: var(--primary-color);
+}
+
+.accordion-item {
+    border-color: #495057;
+}
+
+.contact-icon {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-right: 15px;
+}
+
+.contact-card-header {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+.contact-info a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.contact-info a:hover {
+    color: #8cbf5e;
+}
+
+.map-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%;
+    border-radius: .5rem;
+}
+
+.map-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }

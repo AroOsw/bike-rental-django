@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.db.models import Max
-from core.models import BikeModel, BikeInstance, Reservation, Profile, StravaActivity
+from .models import BikeModel, BikeInstance, Reservation, Profile, StravaActivity
 from .forms import BookingForm, EditBookingForm, ProfileForm
 from django.http import JsonResponse, HttpResponse, FileResponse
 from dotenv import load_dotenv

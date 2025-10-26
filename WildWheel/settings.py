@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', "False").lower() == "true"
 
-ALLOWED_HOSTS = [os.getenv('IPV4'), 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [os.getenv('IPV4'), 'localhost', '127.0.0.1', 'ALLOWED_HOSTS']
 
 
 # Application definition
@@ -108,24 +109,23 @@ WSGI_APPLICATION = 'WildWheel.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-        'TEST': {
-            'NAME': 'test_bike_rental',
-        },
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT'),
+#         'TEST': {
+#             'NAME': 'test_bike_rental',
+#         },
+#     }
+# }
 
+database_url = os.getenv('DATABASE_URL')
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+DATABASES["default"] = dj_database_url.parse(database_url, conn_max_age=600)
 
 AUTH_PASSWORD_VALIDATORS = [
     {

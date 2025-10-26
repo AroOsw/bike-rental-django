@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', "False").lower() == "true"
+DEBUG = False
 
 ALLOWED_HOSTS = [os.getenv('IPV4'), 'localhost', '127.0.0.1', os.environ.get('ALLOWED_HOSTS')]
 
@@ -109,22 +109,26 @@ WSGI_APPLICATION = 'WildWheel.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT'),
+#         'TEST': {
+#             'NAME': 'test_bike_rental',
+#         },
+#     }
+# }
+#
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-        'TEST': {
-            'NAME': 'test_bike_rental',
-        },
-    }
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+    )
 }
-
-database_url = os.getenv('DATABASE_URL')
-DATABASES["default"] = dj_database_url.parse(database_url)
 
 
 AUTH_PASSWORD_VALIDATORS = [

@@ -259,7 +259,7 @@ def profile(request):
 
     if request.method == "POST":
         username = request.POST.get("username")
-        if User.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exclude(pk=request.user.pk).exists():
             messages.error(request, "This username already exists")
             return redirect("profile")
 

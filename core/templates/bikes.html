@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load photo_filters %}
 
 {% block content %}
 <div class="col-xxl-11 mx-auto">
@@ -19,7 +20,7 @@
   {% if bike.main_instance %}
   <div class="bike-card bg-dark">
     {% if bike.main_instance.bike_img %}
-      <img src="{{ bike.main_instance.img_thumbnail.url }}"
+      <img src="{{ bike.main_instance.img_thumbnail.url|file_exists }}"
            alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
            loading="lazy">
     {% else %}

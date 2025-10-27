@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% load photo_filters %}
 
 {% block content %}
 <div class="my-6 d-flex justify-content-center align-items-center">
   <div class="col-11 col-lg-10 col-xl-9 col-xxl-8 bg-dark">
     <div class="m-xl-4 m-m-3 m-sm-2 m-1">
       <div class="bike-img">
-        {% if bike_model.main_instance.img_slider.url %}
-            <img src="{{ bike_model.main_instance.img_slider.url }}"
+        {% if bike_model.main_instance.bike_img %}
+            <img src="{{ bike_model.main_instance.img_slider.url|file_exists }}"
                  alt=" Photo of {{ bike_model.brand }} {{ bike_model.model }}"
                  loading="lazy">
           {% else %}

@@ -252,6 +252,10 @@ def terms(request):
     """Render the terms of service page."""
     return render(request, "terms.html", {})
 
+def privacy(request):
+    """Render the privacy policy page."""
+    return render(request, "privacy_policy.html", {})
+
 @login_required
 def profile(request):
     """Render the user profile page."""

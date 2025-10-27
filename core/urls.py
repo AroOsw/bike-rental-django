@@ -14,6 +14,7 @@ urlpatterns = [
     path("routes/", views.routes, name="routes"),
     path("routes/download_gpx/<int:id>", views.download_gpx, name="download_gpx"),
     path("terms/", views.terms, name="terms"),
+    path("privacy-policy/", views.privacy, name="privacy"),
     path("profile/", views.profile, name="profile"),
     # path("logout_user/", views.logout_user, name="logout_user"),
 ]

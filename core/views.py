@@ -261,11 +261,12 @@ def privacy(request):
 def fb_data_deletion(request):
     """Render the facebook data deletion page."""
     if request.method == 'POST':
-        # Facebook automatycznie wywołuje to gdy user odłącza app
-        return JsonResponse({
+        response = JsonResponse({
             'url': request.build_absolute_uri('/facebook/data-deletion-status/'),
-            'confirmation_code': 'test_deletion_confirmed'
+            'confirmation_code': 'data_deletion_confirmed'
         })
+        response['Content-Type'] = 'application/json'
+        return response
 
     return render(request, "data-deletion.html", {})
 

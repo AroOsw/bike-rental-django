@@ -16,7 +16,7 @@ urlpatterns = [
     path("terms/", views.terms, name="terms"),
     path("privacy-policy/", views.privacy, name="privacy"),
     path("facebook/data-deletion/", views.fb_data_deletion, name="fb_data_deletion"),
-    path("facebook/data-deletion-status/", views.fb_data_deletion, name="facebook_data_deletion_status"),
+    path("facebook/data-deletion-status/", views.fb_data_deletion, name="fb_data_deletion_status"),
     path("profile/", views.profile, name="profile"),
     # path("logout_user/", views.logout_user, name="logout_user"),
 ]

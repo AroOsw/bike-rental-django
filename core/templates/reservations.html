@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% load reservation_tags %}
-{% load photo_filters %}
+
 
 {% block content %}
 <div class="col-xxl-11 col-12 mx-auto">
@@ -22,7 +22,7 @@
     <div class="row p-3">
       <div class="col-12 col-md-5 mb-3 mb-md-0 d-flex justify-content-center">
         {% if bike.main_instance.bike_img %}
-        <img src="{{ reservation.bike_instance.img_thumbnail.url|file_exists }}"
+        <img src="{{ reservation.bike_instance.img_thumbnail.url }}"
              alt=" Photo of {{ reservation.bike_instance.bike_model.brand }} - {{ reservation.bike_instance.bike_model.model }}"
              class="img-fluid"
              loading="lazy">

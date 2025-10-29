@@ -18,11 +18,11 @@
             {% crispy form %}
 
               <div>
-                <p class="mb-0">Don't have an account? <a href="{% url 'account_signup' %}" class="text-white-50 fw-bold">Sign Up</a> or login with</p>
+                <p class="mb-0">Don't have an account? <a href="{% url 'account_signup' %}" class="text-white-50 fw-bold">Sign Up</a> or login with Google</p>
               </div>
 
               <div class="d-flex justify-content-center text-center mt-4 pt-1">
-                <a href="{% provider_login_url 'facebook' %}?process=login" class="btn text-white"><i class="fab fa-facebook-f fa-lg mx-3" style="color: var(--primary-color);"></i></a>
+<!--                <a href="{% provider_login_url 'facebook' %}?process=login" class="btn text-white"><i class="fab fa-facebook-f fa-lg mx-3" style="color: var(&#45;&#45;primary-color);"></i></a>-->
                 <a href={% provider_login_url 'google' %}?process=login" class="btn text-white"><i class="fab fa-google fa-lg mx-3" style="color: var(--primary-color);"></i></a>
               </div>
           </div>

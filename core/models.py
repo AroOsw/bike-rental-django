@@ -5,6 +5,7 @@ from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill, ResizeToFit
 from django.utils.text import slugify
 from decimal import Decimal
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
 DISCOUNT_14_DAYS = Decimal("0.20")
@@ -77,6 +78,7 @@ class BikeInstance(models.Model):
         options={"quality": 85},
         blank=True,
         null=True,
+        storage=MediaCloudinaryStorage(),
     )
     img_thumbnail = ImageSpecField(
         source="bike_img",

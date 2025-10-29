@@ -1,14 +1,13 @@
 import io
 import os
-from datetime import timedelta
-
 import requests
-import urllib3
+
+from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.db.models import Max
 from .models import BikeModel, BikeInstance, Reservation, Profile, StravaActivity
@@ -16,6 +15,8 @@ from .forms import BookingForm, EditBookingForm, ProfileForm
 from django.http import JsonResponse, HttpResponse, FileResponse
 from dotenv import load_dotenv
 from .utils import generate_gpx_file
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 
@@ -255,6 +256,18 @@ def terms(request):
 def privacy(request):
     """Render the privacy policy page."""
     return render(request, "privacy_policy.html", {})
+
+@csrf_exempt
+def fb_data_deletion(request):
+    """Render the facebook data deletion page."""
+    if request.method == 'POST':
+        # Facebook automatycznie wywołuje to gdy user odłącza app
+        return JsonResponse({
+            'url': request.build_absolute_uri('/facebook/data-deletion-status/'),
+            'confirmation_code': 'test_deletion_confirmed'
+        })
+
+    return render(request, "data-deletion.html", {})
 
 @login_required
 def profile(request):

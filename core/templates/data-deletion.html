@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5" data-bs-theme="dark">
+  <div class="card p-4 shadow-sm">
+    <h2 class="text-center mb-4">Facebook Login Data Deletion</h2>
+    <div class="info-box">
+        <h2>Data Information</h2>
+        <p>This application is a test/portfolio project and stores only basic data from your Facebook account:</p>
+        <ul>
+            <li>Name</li>
+            <li>Email address</li>
+            <li>Facebook User ID</li>
+        </ul>
+
+        <h3>How to delete your data?</h3>
+        <p>Your data is automatically deleted when you:</p>
+        <ul>
+            <li>Delete your account in the application</li>
+            <li>Disconnect the app in your Facebook settings</li>
+        </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

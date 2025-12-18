@@ -1,0 +1,37 @@
+# .dockerignore
+
+# Git
+.git
+.gitignore
+
+# Python Cache & Artifacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing & Coverage
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/    <-- TO ROZWIĄŻE TWÓJ PROBLEM
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# IDE configs
+.idea/
+.vscode/

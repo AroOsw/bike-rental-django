@@ -1,4 +1,4 @@
-from django.core.validators import FileExtensionValidator
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from imagekit.models import ImageSpecField, ProcessedImageField
@@ -32,17 +32,29 @@ class BikeModel(models.Model):
             self.slug = slugify(f"{self.brand} - {self.model}")
         super().save(*args, **kwargs)
 
-
     @property
     def main_instance(self):
         return self.instances.first()
-
 
     @property
     def available_sizes(self):
         sizes = self.instances.values_list('size', flat=True).distinct()
         return list(sizes)
 
+    def get_ai_description(self) -> str:
+        """Get full bike description and convert for plain string easy to use for AI"""
+        spec = self.specification or {}
+        formatted_specs = [f"{key}: {value}" for key, value in spec.items() ]
+        ai_ready_bike_specification = ". ".join(formatted_specs)
+        return (
+            f"Rower: {self.brand} {self.model}. "
+            f"Type: {self.get_type_display()}. "  
+            f"Description: {self.model_description}. "
+            f"Price per day: {self.price_per_day} THB. "
+            f"Specification: {ai_ready_bike_specification}."
+            f"Discount policy: 3-6 days: 10% cheaper, 7-13 days: 15% cheaper, more than 14 days: 20% cheaper."
+
+        )
 
     def calculate_rental_price(self, num_days):
         """Calculates rental price based on the number of days. Offers a discount for longer rentals."""
@@ -139,17 +151,37 @@ class Reservation(models.Model):
         self.calculate_total_cost()
         super().save(*args, **kwargs)
 
-
-class ChatMessage(models.Model):
-    """Model representing a chat message in the system."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_from_consultant = models.BooleanField(default=False)
+class ChatSession(models.Model):
+    """Model representing a chat session between a user and a consultant."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chat_sessions")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"Message from {self.user.username} at {self.timestamp}"
+        return f"Chat session {self.id} - {self.user.username}"
 
+class ChatMessage(models.Model):
+    """Model adjusted to LLM (OpenAi/Anthropic) standards."""
+    ROLE_CHOICES = [
+        ('user', 'User'),           # Customer message
+        ('assistant', 'Assistant'), # Consultant/AI message
+        ('system', 'System')        # Instructions or context for the AI
+    ]
+    session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, null=True, blank=True, related_name="messages")
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="user")
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    # Production Metadata (analyze and costs)
+    tokens_used = models.IntegerField(null=True, blank=True)
+    model_name = models.CharField(max_length=50, default="gpt-4o-mini")
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"{self.role} @ {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
 
 class Profile(models.Model):
     """Model representing a User profile."""
@@ -179,3 +211,4 @@ class StravaActivity(models.Model):
 
     def __str__(self):
         return f"{self.activity_id} - {self.name} - {self.distance}"
+

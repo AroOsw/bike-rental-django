@@ -1,6 +1,5 @@
 import os
 import re
-
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from markdownify import markdownify as md

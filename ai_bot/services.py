@@ -1,12 +1,10 @@
 import os
 import logging
-import glob
-import random
 from pathlib import Path
 from django.conf import settings
-from numpy.ma.core import count
+from uuid import UUID
 from openai import OpenAI
-from .models import KnowledgeBase
+from .models import KnowledgeBase, ChatMessage, ChatSession
 from core.models import BikeModel
 from dotenv import load_dotenv
 from pgvector.django import CosineDistance
@@ -14,6 +12,7 @@ from pgvector.django import CosineDistance
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 class VectorService:
@@ -25,15 +24,8 @@ class VectorService:
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.model_name = "text-embedding-3-small"
 
-    # Mock version for free
-    # def get_embedding(self, text: str) -> list[float]:
-    #     """Mock version - for tests without payments
-    #     stimulating OpenAi answer returning 1536 random numbers"""
-    #     print(f"--- MOCK: Generating fake vector for text: {text[:30]}... ---")
-    #     return [random.uniform(-1, 1) for _ in range(1536)]
-
     # Basic version
-    def get_embedding(self, text: str) ->list[float]:
+    def get_embedding(self, text: str) -> list[float]:
         response = self.client.embeddings.create(
             input=text,
             model=self.model_name
@@ -99,25 +91,61 @@ class VectorService:
 
         return "No result"
 
-    def ask_assistant(self, question):
-        # 1. Get context from base
-        context = self.get_context(question)
+    def ask_assistant(self, all_messages: list[dict]):
 
-        messages=[
-            {
-              "role": "system",
-              "content": f"You are a helpful assistant for a bike rental shop called WildWheel in Hua Hin, Thailand. "
-              f"Answer the user's question using ONLY the following context:\n\n{context}"
-            },
-            {
-            "role": "user",
-            "content": question,
-            }
-        ]
-
-        # 2. Prepare query for chat model
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=messages
+            messages=all_messages,
+            temperature=0.3,
         )
-        return response.choices[0].message.content
+        return response
+
+
+class ChatService:
+    def __init__(self):
+        self.vector_service = VectorService()
+
+    def get_chat_response(self, session_id: UUID, user_message: str) -> str:
+
+        try:
+            session = ChatSession.objects.get(id=session_id)
+            customer_message = ChatMessage.objects.create(
+                session=session,
+                content=user_message,
+                role="user",
+            )
+            context = self.vector_service.get_context(user_message)
+            chat_history = ChatMessage.objects.filter(session=session).order_by("timestamp")
+            messages_to_send = [
+                {
+                    "role": "system",
+                    "content": f"You are a helpful assistant for a bike rental shop called WildWheel in Hua Hin, Thailand. "
+                               f"Answer the user's question using ONLY the following context, and chat history"
+                               "If the answer is not in the context, inform the user that we don't have that specific"
+                               "service or information, but always try to suggest the closest alternative available "
+                               "in our shop (e.g., if someone asks for a helicopter, tell them we only rent bikes)."
+
+                               "Be helpful and conversational, but never make up specific prices, distances, "
+                               "or rules that are not in the context."
+
+                               "If the user asks about something completely unrelated to bikes, tourism in Hua Hin,"
+                               " or our shop, then and only then use the fallback: 'I'm sorry, "
+                               "but I don't have information on this topic...'"
+                               f"\n\n{context}"
+                },
+            ]
+            for message in chat_history:
+                messages_to_send.append({"role": message.role, "content": message.content})
+
+            ask_assistant = self.vector_service.ask_assistant(messages_to_send)
+            ai_answer = ChatMessage.objects.create(
+                session=session,
+                content=ask_assistant.choices[0].message.content,
+                role="assistant",
+                tokens_used=ask_assistant.usage.total_tokens
+            )
+            return ask_assistant.choices[0].message.content
+
+
+        except ChatSession.DoesNotExist:
+            raise ValueError("Session not found", None)

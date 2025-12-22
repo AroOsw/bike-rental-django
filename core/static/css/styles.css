@@ -96,6 +96,17 @@ p {
   display: none;
 }
 
+.bg-wildwheel {
+  background-color: var(--primary-color) !important; /* Twój kolor WildWheel */
+  color: white !important;              /* Żeby tekst był czytelny */
+  font-weight: normal;
+  text-align: left;
+}
+
+.btn-ai-bot {
+  background-color: #31690d;
+}
+
 .btn-success {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
@@ -838,3 +849,17 @@ span.flatpickr-weekday {
     border: 0;
 }
 
+#chat-messages div,
+#chat-messages p,
+#chat-messages li,
+#chat-messages span {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+}
+
+#chat-messages p {
+    margin-bottom: 0.5rem;
+}
+#chat-messages p:last-child {
+    margin-bottom: 0;
+}

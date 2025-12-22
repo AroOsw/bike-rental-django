@@ -1,0 +1,154 @@
+<div id="chat-widget-container" class="fixed-bottom p-3 m-3" style="left: auto; z-index: 1050;" data-bs-theme="dark">
+
+    <button id="chat-toggle-btn" class="btn btn-success rounded-circle shadow-lg" style="width: 80px; height: 80px;">
+        <i class="bi bi-chat-dots"></i></button>
+
+    <div id="chat-window" class="card shadow-lg d-none"
+         style="width: 350px; position: absolute; bottom: 80px; right: 0;">
+
+        <div class="card-header bg-wildwheel text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">WildWheel Assistant</h5>
+            <button id="chat-close-btn" class="btn-close btn-close-white" aria-label="Close"></button>
+        </div>
+
+        <div id="chat-messages" class="card-body overflow-auto" style="height: 400px; background-color: #212529;">
+            <div class="mb-2 text-start">
+                <div class="d-inline-block bg-secondary text-white p-2 rounded-3 shadow-sm text-start"
+                     style="max-width: 80%; font-size: 1rem; font-weight: 700;">
+                    Hi! I'm WildWheel AI Chatbot. How can I help you?
+                </div>
+            </div>
+        </div>
+{#            <div class="mb-2 text-start">#}
+{#                <span class="p-2 text-wrap shadow-sm text-start" style="max-width: 80%;">#}
+{#                    Hi! I'm WildWheel AI Chatbot. How can I help you?#}
+{#                </span>#}
+{#            </div>#}
+
+
+        <div class="card-footer border-top-0 bg-wildwheel">
+            <div class="input-group">
+                <input type="text" id="chat-input" class="form-control" placeholder="Type your question..."
+                       aria-label="User question">
+                <button id="chat-send-btn" class="btn btn-ai-bot" type="button">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    // 1. Elementy interfejsu
+    const chatWindow = document.getElementById('chat-window');
+    const toggleBtn = document.getElementById('chat-toggle-btn');
+    const closeBtn = document.getElementById('chat-close-btn');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+    const messagesArea = document.getElementById('chat-messages');
+
+    toggleBtn.onclick = () => {
+        chatWindow.classList.remove('d-none');
+        toggleBtn.classList.add('d-none');
+    };
+
+    closeBtn.onclick = () => {
+        chatWindow.classList.add('d-none');
+        toggleBtn.classList.remove('d-none');
+    };
+
+
+    function appendMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `mb-2 text-${sender === 'user' ? 'end' : 'start'}`;
+
+        const bubble = document.createElement('div');
+
+        // Dodajemy 'badge' i 'p-2', aby zachować identyczny padding i font-size
+        bubble.className = `badge p-2 text-wrap shadow-sm ${
+            sender === 'user' ? 'bg-wildwheel' : 'bg-secondary'
+        }`;
+
+        // Kluczowe dla wyrównania do lewej i czytelności list:
+        bubble.style.maxWidth = '80%';
+        bubble.style.textAlign = 'left';
+        bubble.style.fontWeight = '600'; // Badge domyślnie jest gruby, więc tu też
+        bubble.style.fontSize = '0.6rem';   // Wymuszamy standardową wielkość (lub 0.9rem jeśli wolisz)
+        bubble.style.whiteSpace = 'normal'; // Ważne dla list
+
+        if (sender === 'bot') {
+            bubble.innerHTML = marked.parse(text);
+
+            // Stylowanie list wewnątrz dymka, żeby nie "uciekały"
+            const lists = bubble.querySelectorAll('ul, ol');
+            lists.forEach(l => {
+                l.style.textAlign = 'left';
+                l.style.paddingLeft = '1.5rem';
+                l.style.margin = '10px 0';
+            });
+        } else {
+            bubble.textContent = text;
+        }
+
+        msgDiv.appendChild(bubble);
+        messagesArea.appendChild(msgDiv);
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    // 4. GŁÓWNA LOGIKA - Wysyłanie wiadomości
+    async function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        appendMessage(text, 'user');
+        chatInput.value = '';
+
+        try {
+            // Używamy pełnej ścieżki z ukośnikami, aby uniknąć błędów URL
+            const response = await fetch('/ai-bot/ask/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') // <--- TO JEST KLUCZOWE
+                },
+                body: JSON.stringify({message: text})
+            });
+
+            if (!response.ok) throw new Error('Błąd serwera');
+
+            const data = await response.json();
+            if (data.reply) {
+                appendMessage(data.reply, 'bot');
+            } else {
+                appendMessage("Otrzymałem pustą odpowiedź.", 'bot');
+            }
+        } catch (error) {
+            console.error("Błąd fetch:", error);
+            appendMessage("Błąd połączenia. Sprawdź konsolę (F12).", 'bot');
+        }
+    }
+
+    // 5. Podpięcie zdarzeń pod przyciski
+    sendBtn.onclick = sendMessage;
+    chatInput.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Zapobiega przeładowaniu strony
+            sendMessage();
+        }
+    };
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>

@@ -1,5 +1,8 @@
+import uuid
 from django.db import models
 from pgvector.django import VectorField
+from core.models import User
+
 # Create your models here.
 
 
@@ -13,3 +16,35 @@ class KnowledgeBase(models.Model):
 
     def __str__(self):
         return f"Knowledge: {self.source}"
+
+class ChatSession(models.Model):
+    """Model representing a chat session between a user and a consultant."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chat_sessions")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Chat session {self.id} - {self.user.username}"
+
+class ChatMessage(models.Model):
+    """Model adjusted to LLM (OpenAi/Anthropic) standards."""
+    ROLE_CHOICES = [
+        ('user', 'User'),           # Customer message
+        ('assistant', 'Assistant'), # Consultant/AI message
+        ('system', 'System')        # Instructions or context for the AI
+    ]
+    session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, null=True, blank=True, related_name="messages")
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="user")
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    # Production Metadata (analyze and costs)
+    tokens_used = models.IntegerField(null=True, blank=True)
+    model_name = models.CharField(max_length=50, default="gpt-4o-mini")
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"{self.role} @ {self.timestamp.strftime('%Y-%m-%d %H:%M')}"

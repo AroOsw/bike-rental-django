@@ -105,7 +105,7 @@ class ChatService:
     def __init__(self):
         self.vector_service = VectorService()
 
-    def get_chat_response(self, session_id: UUID, user_message: str) -> str:
+    def get_chat_response(self, session_id: UUID, user_message: str, system_context) -> str:
 
         try:
             session = ChatSession.objects.get(id=session_id)
@@ -131,6 +131,7 @@ class ChatService:
                                "If the user asks about something completely unrelated to bikes, tourism in Hua Hin,"
                                " or our shop, then and only then use the fallback: 'I'm sorry, "
                                "but I don't have information on this topic...'"
+                               f"\n{system_context}\n"
                                f"\n\n{context}"
                 },
             ]

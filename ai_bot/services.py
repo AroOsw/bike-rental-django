@@ -80,7 +80,7 @@ class VectorService:
 
         matches = KnowledgeBase.objects.annotate(
             distance=CosineDistance("embedding", query_vector)
-        ).order_by("distance")[:3]
+        ).order_by("distance")[:10]
 
         if matches:
             context_list = []

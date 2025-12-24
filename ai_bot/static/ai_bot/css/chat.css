@@ -1,0 +1,40 @@
+#chat-messages div,
+#chat-messages p,
+#chat-messages li,
+#chat-messages span {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+}
+
+#chat-messages p {
+    margin-bottom: 0.5rem;
+}
+#chat-messages p:last-child {
+    margin-bottom: 0;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    display: inline-block;
+    border-radius: 50%;
+    margin: 0 2px;
+    animation: typing 1s infinite ease-in-out;
+    opacity: 0.6;
+}
+
+.typing-dots {
+    min-width: 45px;
+    display: flex;
+    justify-content: center;;
+    align-items: center;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}

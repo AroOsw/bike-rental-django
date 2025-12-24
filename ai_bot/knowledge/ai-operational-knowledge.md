@@ -74,10 +74,10 @@ No hourly extensions are offered.
 ## 6. Delivery & Pickup
 
 ### Free Delivery
-- Free delivery is included **up to 10 km from the shop**.
+- Free delivery is included **up to 20 km from the shop**.
 
 ### Extended Delivery
-- Delivery beyond 10 km:
+- Delivery beyond 20 km:
   - Available on request
   - Price is agreed individually with shop staff
 
@@ -95,7 +95,6 @@ No hourly extensions are offered.
 - Multitool
 - Mini pump
 - Bottle cages
-- Drinking bottles
 
 No extra charge for standard accessories.
 
@@ -188,3 +187,6 @@ The AI assistant must NEVER:
 - Estimate repair costs
 - Invent penalties or policies
 - Provide legal or medical advice
+
+
+

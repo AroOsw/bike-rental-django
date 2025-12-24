@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Processing {filename}...")
                 with open(os.path.join(kb_path, filename), 'r') as f:
                     content = f.read()
-                    # Tutaj wywołujesz swoją logikę zapisu do bazy
+
                     service.update_knowledge(source=filename, content=content)
 
         self.stdout.write(self.style.SUCCESS("Successfully updated knowledge base!"))

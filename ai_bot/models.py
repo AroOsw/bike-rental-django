@@ -30,16 +30,15 @@ class ChatSession(models.Model):
 class ChatMessage(models.Model):
     """Model adjusted to LLM (OpenAi/Anthropic) standards."""
     ROLE_CHOICES = [
-        ('user', 'User'),           # Customer message
-        ('assistant', 'Assistant'), # Consultant/AI message
-        ('system', 'System')        # Instructions or context for the AI
+        ('user', 'User'),
+        ('assistant', 'Assistant'),
+        ('system', 'System')
     ]
     session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, null=True, blank=True, related_name="messages")
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="user")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    # Production Metadata (analyze and costs)
     tokens_used = models.IntegerField(null=True, blank=True)
     model_name = models.CharField(max_length=50, default="gpt-4o-mini")
 

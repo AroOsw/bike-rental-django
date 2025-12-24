@@ -1,11 +1,10 @@
 import json
-from django.shortcuts import render
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .services import ChatService
 from django.http import JsonResponse
-from .models import ChatSession, ChatMessage
-from core.models import Reservation
+from .models import ChatSession
+
 
 
 

@@ -5,7 +5,6 @@ from django.conf import settings
 from uuid import UUID
 from openai import OpenAI
 from .models import KnowledgeBase, ChatMessage, ChatSession
-from core.models import BikeModel
 from dotenv import load_dotenv
 from pgvector.django import CosineDistance
 
@@ -24,7 +23,6 @@ class VectorService:
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.model_name = "text-embedding-3-small"
 
-    # Basic version
     def get_embedding(self, text: str) -> list[float]:
         response = self.client.embeddings.create(
             input=text,
@@ -61,7 +59,6 @@ class VectorService:
             print("This folder doesn't exist")
             return 0
 
-        # target_file = path_to_knowledge / "ai-operational-knowledge.md"
         for file in path_to_knowledge.glob("*.md"):
             if file.exists():
                 with open(file, "r", encoding="utf-8") as f:

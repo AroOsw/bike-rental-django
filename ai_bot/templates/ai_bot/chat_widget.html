@@ -10,14 +10,6 @@
             <button id="chat-close-btn" class="btn-close btn-close-white" aria-label="Close"></button>
         </div>
 
-        {#        <div id="chat-messages" class="card-body overflow-auto" style="height: 400px; background-color: #212529;">#}
-        {#            <div class="d-inline-block bg-secondary text-white p-2 rounded-3 mb-2 shadow-sm text-start"#}
-        {#                 style="max-width: 80%; font-size: 1rem; font-weight: 700;">#}
-        {#                Hi! I'm WildWheel AI Chatbot. How can I help you?#}
-        {#            </div>#}
-        {##}
-        {#        </div>#}
-
         <div id="chat-messages" class="card-body overflow-auto" style="height: 400px; background-color: #212529;"></div>
         {{ chat_history|json_script:"chat-history-data" }}
 
@@ -41,7 +33,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        // 1. Elementy interfejsu
         const chatWindow = document.getElementById('chat-window');
         const toggleBtn = document.getElementById('chat-toggle-btn');
         const closeBtn = document.getElementById('chat-close-btn');
@@ -73,7 +64,6 @@
             const bubble = document.createElement('div');
             bubble.className = 'd-inline-block bg-secondary p-2 rounded-3 shadow-sm typing-dots';
 
-            // Trzy kropki wewnątrz dymka
             bubble.innerHTML = '<span></span><span></span><span></span>';
 
             msgDiv.appendChild(bubble);
@@ -90,29 +80,25 @@
             }
         }
 
-
         function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `mb-2 text-${sender === 'user' ? 'end' : 'start'}`;
 
             const bubble = document.createElement('div');
 
-            // Dodajemy 'badge' i 'p-2', aby zachować identyczny padding i font-size
             bubble.className = `badge p-2 text-wrap shadow-sm ${
                 sender === 'user' ? 'bg-wildwheel' : 'bg-secondary'
             }`;
 
-            // Kluczowe dla wyrównania do lewej i czytelności list:
             bubble.style.maxWidth = '80%';
             bubble.style.textAlign = 'left';
             bubble.style.fontWeight = '600';
             bubble.style.fontSize = '0.6rem';
-            bubble.style.whiteSpace = 'normal'; // Ważne dla list
+            bubble.style.whiteSpace = 'normal';
 
             if (sender === 'bot' || sender === 'assistant') {
                 bubble.innerHTML = marked.parse(text);
 
-                // Stylowanie list wewnątrz dymka, żeby nie "uciekały"
                 const lists = bubble.querySelectorAll('ul, ol');
                 lists.forEach(l => {
                     l.style.textAlign = 'left';
@@ -131,11 +117,8 @@
         try {
             const historyDataElement = document.getElementById('chat-history-data');
             if (historyDataElement) {
-                // Czytamy tekst, a potem parsujemy go TYLKO RAZ
-                const historyRaw = JSON.parse(historyDataElement.textContent);
 
-                // Jeśli w Pythonie zrobiłeś json.dumps(), to historyRaw jest stringiem.
-                // Jeśli przekazałeś listę, historyRaw jest już tablicą.
+                const historyRaw = JSON.parse(historyDataElement.textContent);
                 const history = typeof historyRaw === 'string' ? JSON.parse(historyRaw) : historyRaw;
 
                 if (!history || history.length === 0) {
@@ -148,15 +131,12 @@
                 }
             }
         } catch (e) {
-            console.error("Błąd wczytywania historii:", e);
-            // W razie błędu chociaż pokaż powitanie
+            console.error("History loading error:", e);
             appendMessage("Hi! I'm WildWheel AI Chatbot. How can I help you?", "bot");
         }
 
-        // Przewiń na dół po załadowaniu wszystkiego
         messagesArea.scrollTop = messagesArea.scrollHeight;
 
-        // 4. GŁÓWNA LOGIKA - Wysyłanie wiadomości
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
@@ -167,12 +147,11 @@
             showTypingIndicator();
 
             try {
-                // Używamy pełnej ścieżki z ukośnikami, aby uniknąć błędów URL
                 const response = await fetch('/ai-bot/ask/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken') // <--- TO JEST KLUCZOWE
+                        'X-CSRFToken': getCookie('csrftoken')
                     },
                     body: JSON.stringify({message: text})
                 });
@@ -194,11 +173,10 @@
             }
         }
 
-        // 5. Podpięcie zdarzeń pod przyciski
         sendBtn.onclick = sendMessage;
         chatInput.onkeypress = (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault(); // Zapobiega przeładowaniu strony
+                e.preventDefault();
                 sendMessage();
             }
         };

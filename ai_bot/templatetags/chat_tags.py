@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django import template
 from ai_bot.models import ChatSession, ChatMessage
 
@@ -27,8 +26,6 @@ def show_chat_history(context):
 
         for message in reversed(chat_history):
             history_data.append({"role": message.role, "content": message.content})
-        print(f"DEBUG: Znaleziono {chat_history.count()} wiadomości dla sesji {session_obj.id}")
-        print(f"for user: {user}")
 
     return {
         "chat_history": history_data,

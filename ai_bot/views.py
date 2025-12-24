@@ -1,5 +1,4 @@
 import json
-
 from django.shortcuts import render
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,30 +12,6 @@ from core.models import Reservation
 # Create your views here.
 
 class ChatView(LoginRequiredMixin, View):
-    def get(self, request):
-        user = request.user
-
-        session_obj = ChatSession.objects.filter(
-            user=user,
-            is_active=True,
-        ).order_by("-created_at").first()
-
-        if not session_obj:
-            session_obj = ChatSession.objects.create(
-                user=user,
-                is_active=True,
-            )
-
-        chat_history = ChatMessage.objects.filter(session=session_obj).order_by("timestamp")
-        history_data = []
-        for message in chat_history:
-            history_data.append({"role": message.role, "content": message.content})
-
-        return render(request, "chat_widget.html", context={
-            "chat_history": history_data,
-        })
-
-
     def post(self, request, *args, **kwargs):
 
         user = request.user
@@ -62,12 +37,6 @@ class ChatView(LoginRequiredMixin, View):
         if not user_text:
             return JsonResponse({"error": "Message is empty"}, status=400)
 
-        full_prompt = (
-            "SYSTEM CONTEXT (INTERNAL DATABASE):\n"
-            f"{system_context}\n"
-            "-------------------\n"
-            f"USER QUESTION: {user_text}"
-        )
 
         session_obj = ChatSession.objects.filter(
             user=request.user,
@@ -84,7 +53,8 @@ class ChatView(LoginRequiredMixin, View):
         chatservice = ChatService()
         response_text = chatservice.get_chat_response(
             session_id=session_obj.id,
-            user_message=full_prompt,
+            user_message=user_text,
+            system_context=f"SYSTEM CONTEXT (INTERNAL DATABASE): \n{system_context}",
         )
 
         return JsonResponse({"reply": response_text})

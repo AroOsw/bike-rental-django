@@ -108,10 +108,10 @@ def reservations(request):
     """Render the reservations page."""
     if request.user.is_authenticated:
         user_reservations = Reservation.objects.filter(user=request.user).order_by("-created_at")
-        return render(request, "tests/reservations.html", {
+        return render(request, "reservations.html", {
             "reservations": user_reservations
         })
-    return render(request, "tests/reservations.html", {})
+    return render(request, "reservations.html", {})
 
 def reservation_delete(request):
     """Render the reservations page."""
@@ -142,7 +142,7 @@ def reservation_edit(request, reservation_id):
         else:
             booking_form = EditBookingForm(instance=reservation)
 
-        return render(request, "tests/reservation-edit.html", {
+        return render(request, "reservation-edit.html", {
             "form": booking_form,
             "bike_model": reservation.bike_instance.bike_model,
         })
@@ -272,7 +272,7 @@ def profile(request):
             messages.error(request, "Error")
     else:
         profile_form = ProfileForm(instance=request.user.profile, user=request.user)
-    return render(request, "tests/profile.html", {"form": profile_form})
+    return render(request, "profile.html", {"form": profile_form})
 
 def logout_view(request):
     """Log out the user and redirect to the index page."""

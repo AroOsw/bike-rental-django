@@ -43,16 +43,18 @@ class BikeModel(models.Model):
     def get_ai_description(self) -> str:
         """Get full bike description and convert for plain string easy to use for AI"""
         spec = self.specification or {}
-        formatted_specs = [f"{key}: {value}" for key, value in spec.items() ]
+        formatted_specs = [f"* **{key}**: {value}" for key, value in spec.items() ]
         ai_ready_bike_specification = ". ".join(formatted_specs)
-        return (
-            f"Rower: {self.brand} {self.model}. "
-            f"Type: {self.get_type_display()}. "  
-            f"Description: {self.model_description}. "
-            f"Price per day: {self.price_per_day} THB. "
-            f"Specification: {ai_ready_bike_specification}."
-            f"Discount policy: 3-6 days: 10% cheaper, 7-13 days: 15% cheaper, more than 14 days: 20% cheaper."
 
+        return (
+            f"## MODEL: {self.brand} {self.model}\n"
+            f"* **Type**: {self.get_type_display()}\n"
+            f"* **Price**: {self.price_per_day} THB/day\n"
+            f"* **Description**: {self.model_description}\n"
+            f"### Technical Specification:\n{ai_ready_bike_specification}\n"
+            f"### Pricing Policy:\n"
+            f"3-6 days: 10% discount | 7-13 days: 15% discount | 14+ days: 20% discount.\n"
+            f"ACTION: Always calculate and show the discounted price for the requested period."
         )
 
     def calculate_rental_price(self, num_days):
@@ -120,8 +122,8 @@ class BikeInstance(models.Model):
 
 class Reservation(models.Model):
     """Model representing bike reservation through user."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    bike_instance = models.ForeignKey(BikeInstance, on_delete=models.CASCADE, related_name="reservations")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_reservations")
+    bike_instance = models.ForeignKey(BikeInstance, on_delete=models.CASCADE, related_name="bike_reservations")
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)

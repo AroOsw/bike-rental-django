@@ -5,7 +5,6 @@
 
     <div id="chat-window" class="card shadow-lg d-none"
          style="width: 350px; position: absolute; bottom: 80px; right: 0;">
-
         <div class="card-header bg-wildwheel text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">WildWheel Assistant</h5>
             <button id="chat-close-btn" class="btn-close btn-close-white" aria-label="Close"></button>
@@ -17,13 +16,10 @@
                      style="max-width: 80%; font-size: 1rem; font-weight: 700;">
                     Hi! I'm WildWheel AI Chatbot. How can I help you?
                 </div>
+{#                {% for message in chat_history %}#}
+{#                <div class="msg"#}
             </div>
         </div>
-{#            <div class="mb-2 text-start">#}
-{#                <span class="p-2 text-wrap shadow-sm text-start" style="max-width: 80%;">#}
-{#                    Hi! I'm WildWheel AI Chatbot. How can I help you?#}
-{#                </span>#}
-{#            </div>#}
 
 
         <div class="card-footer border-top-0 bg-wildwheel">
@@ -56,6 +52,33 @@
         chatWindow.classList.add('d-none');
         toggleBtn.classList.remove('d-none');
     };
+
+    let typingIndicator = null;
+
+    function showTypingIndicator() {
+        const msgDiv = document.createElement('div');
+        msgDiv.id = 'typing-indicator-wrapper';
+        msgDiv.className = 'mb-2 text-start';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'd-inline-block bg-secondary p-2 rounded-3 shadow-sm typing-dots';
+
+        // Trzy kropki wewnątrz dymka
+        bubble.innerHTML = '<span></span><span></span><span></span>';
+
+        msgDiv.appendChild(bubble);
+        messagesArea.appendChild(msgDiv);
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+
+        typingIndicator = msgDiv;
+    }
+
+    function removeTypingIndicator() {
+        if (typingIndicator) {
+            typingIndicator.remove();
+            typingIndicator = null;
+        }
+    }
 
 
     function appendMessage(text, sender) {
@@ -103,6 +126,8 @@
         appendMessage(text, 'user');
         chatInput.value = '';
 
+        showTypingIndicator();
+
         try {
             // Używamy pełnej ścieżki z ukośnikami, aby uniknąć błędów URL
             const response = await fetch('/ai-bot/ask/', {
@@ -114,17 +139,20 @@
                 body: JSON.stringify({message: text})
             });
 
-            if (!response.ok) throw new Error('Błąd serwera');
+            removeTypingIndicator();
+
+            if (!response.ok) throw new Error('Server error');
 
             const data = await response.json();
             if (data.reply) {
                 appendMessage(data.reply, 'bot');
             } else {
-                appendMessage("Otrzymałem pustą odpowiedź.", 'bot');
+                appendMessage("I received empty answer.", 'bot');
             }
         } catch (error) {
-            console.error("Błąd fetch:", error);
-            appendMessage("Błąd połączenia. Sprawdź konsolę (F12).", 'bot');
+            removeTypingIndicator();
+            console.error("Error fetch:", error);
+            appendMessage("Connection error. Check console (F12).", 'bot');
         }
     }
 

@@ -12,6 +12,7 @@ dependencies = [
     "django-allauth>=65.10.0",
     "django-crispy-forms>=2.4",
     "django-imagekit>=5.0.0",
+    "djangorestframework>=3.16.1",
     "dotenv==0.9.9",
     "git-filter-repo>=2.47.0",
     "gpxpy>=1.6.2",

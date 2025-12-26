@@ -50,10 +50,15 @@ class ChatView(LoginRequiredMixin, View):
             )
 
         chatservice = ChatService()
-        response_text = chatservice.get_chat_response(
-            session_id=session_obj.id,
-            user_message=user_text,
-            system_context=f"SYSTEM CONTEXT (INTERNAL DATABASE): \n{system_context}",
-        )
-
-        return JsonResponse({"reply": response_text})
+        try:
+            response_text = chatservice.get_chat_response(
+                session_id=session_obj.id,
+                user_message=user_text,
+                system_context=f"SYSTEM CONTEXT (INTERNAL DATABASE): \n{system_context}",
+            )
+            return JsonResponse({"reply": response_text})
+        except Exception as e:
+            return JsonResponse(
+                {"error": "OpenAI connection error, please try again later."},
+                status=503
+            )

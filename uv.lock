@@ -57,6 +57,7 @@ dependencies = [
     { name = "django-allauth" },
     { name = "django-crispy-forms" },
     { name = "django-imagekit" },
+    { name = "djangorestframework" },
     { name = "dotenv" },
     { name = "git-filter-repo" },
     { name = "gpxpy" },
@@ -87,6 +88,7 @@ requires-dist = [
     { name = "django-allauth", specifier = ">=65.10.0" },
     { name = "django-crispy-forms", specifier = ">=2.4" },
     { name = "django-imagekit", specifier = ">=5.0.0" },
+    { name = "djangorestframework", specifier = ">=3.16.1" },
     { name = "dotenv", specifier = "==0.9.9" },
     { name = "git-filter-repo", specifier = ">=2.47.0" },
     { name = "gpxpy", specifier = ">=1.6.2" },
@@ -348,6 +350,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/61/cd/02611fc0cda31b17fec62c3235234ccf9920a4137de2b677e603749b968e/django-imagekit-5.0.0.tar.gz", hash = "sha256:aae9f74a8e9b6ceb5d15f7d8e266302901e76d9f532c78bd5135cb0fa206a6b0", size = 60041, upload-time = "2023-09-28T00:30:40.062Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/99/0e/a2a2044e7dab7c7aced92574b7428d65edc370024b94a72d5f00293076fe/django_imagekit-5.0.0-py3-none-any.whl", hash = "sha256:a8e77ed6549751026a51f961bb2cd5fda739be691496da8eecbe68ffb966c261", size = 39240, upload-time = "2023-09-28T01:00:43.931Z" },
+]
+
+[[package]]
+name = "djangorestframework"
+version = "3.16.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8a/95/5376fe618646fde6899b3cdc85fd959716bb67542e273a76a80d9f326f27/djangorestframework-3.16.1.tar.gz", hash = "sha256:166809528b1aced0a17dc66c24492af18049f2c9420dbd0be29422029cfc3ff7", size = 1089735, upload-time = "2025-08-06T17:50:53.251Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/ce/bf8b9d3f415be4ac5588545b5fcdbbb841977db1c1d923f7568eeabe1689/djangorestframework-3.16.1-py3-none-any.whl", hash = "sha256:33a59f47fb9c85ede792cbf88bde71893bcda0667bc573f784649521f1102cec", size = 1080442, upload-time = "2025-08-06T17:50:50.667Z" },
 ]
 
 [[package]]
